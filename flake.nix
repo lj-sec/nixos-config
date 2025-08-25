@@ -30,6 +30,7 @@
               imports = [
                 ./home.nix
                 ./git.nix
+                ./hyprland.nix
               ];
             };
           }
