@@ -2,6 +2,6 @@
 {
   imports = [
     ./git.nix
-    ./hyprland.nix
+    ./hyprland
   ];
 }
