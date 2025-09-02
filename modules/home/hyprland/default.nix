@@ -1,11 +1,10 @@
-{ ... }:
+{ inputs, ... }:
 {
-  imports = [
+  imports = [ 
+    ./config.nix
     ./hyprland.nix
-    ./waybar.nix
-    ./swaync.nix
-    ./kitty.nix
-    ./rofi.nix
-    ./packages.nix
+    ./hyprlock.nix
+    ./variables.nix
+    inputs.hyprland.homeManagerModules.default
   ];
 }

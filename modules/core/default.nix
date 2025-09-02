@@ -8,5 +8,7 @@
     ./services.nix
     ./system.nix
     ./wayland.nix
+    ./virtualization.nix
+    ./steam.nix
   ];
 }

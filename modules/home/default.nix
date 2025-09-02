@@ -1,7 +1,14 @@
 { ... }:
 {
   imports = [
-    ./git.nix
     ./hyprland
+    ./waybar
+    ./swaync
+    ./kitty.nix
+    ./rofi.nix
+    ./git.nix
+    ./browser.nix
+    ./btop.nix
+    ./waypaper.nix
   ];
 }
