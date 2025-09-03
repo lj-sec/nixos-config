@@ -10,5 +10,8 @@
     ./browser.nix
     ./btop.nix
     ./waypaper.nix
+    ./fish.nix
+    ./fastfetch.nix
+    ./grim.nix
   ];
 }
