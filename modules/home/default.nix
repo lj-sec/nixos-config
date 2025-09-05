@@ -2,7 +2,7 @@
 {
   imports = [
     ./hyprland
-    ./waybar
+    ./waybar.nix
     ./swaync
     ./kitty.nix
     ./rofi.nix
@@ -13,5 +13,8 @@
     ./fish.nix
     ./fastfetch.nix
     ./grim.nix
+    ./theme
+    ./discord.nix
+    ./vscode
   ];
 }

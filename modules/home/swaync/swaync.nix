@@ -10,16 +10,16 @@
       "layer-shell" = true;
 
       cssPriority = "user";
-      notification-window-width = 360;
-      "control-center-width" = 420;
-      "control-center-height" = 640;      
+      notification-window-width = 250;
+      "control-center-width" = 320;
+      "control-center-height" = 540;      
 
-      timeout = 10;
+      timeout = 5;
       "timeout-low" = 5;
       "timeout-critical" = 0;
 
       "image-visibility" = "when-avaliable";
-      "notification-icon-size" = 56;
+      "notification-icon-size" = 42;
 
       "keyboard-shortcuts" = true;
       "transition-time" = 180;

@@ -13,7 +13,7 @@ in {
         "swaync &"
         "swww-daemon &"
         "wl-clip-persist --clipboard both &"
-        "hyprctl setcursor Bibata-Modern-Ice 24 &"
+        "hyprctl setcursor Bibata-Modern-Ice 16 &"
         "hyprlock"
       ];
 
@@ -89,6 +89,10 @@ in {
           color = "rgba(00000055)";
         };
       };
+
+      windowrulev2 = [
+        "opacity 0.75 0.75, class:^(dicsord)$"
+      ];
         
       animations = {
         enabled = true;

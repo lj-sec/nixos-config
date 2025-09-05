@@ -10,5 +10,6 @@
     ./wayland.nix
     ./virtualization.nix
     ./steam.nix
+    ./security.nix
   ];
 }

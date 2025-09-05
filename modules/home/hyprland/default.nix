@@ -5,6 +5,7 @@
     ./hyprland.nix
     ./hyprlock.nix
     ./variables.nix
+    ./polkit.nix
     inputs.hyprland.homeManagerModules.default
   ];
 }

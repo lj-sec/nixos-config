@@ -1,8 +1,8 @@
 { ... }:
 {
   imports = [
-    ./waybar.nix
+    ./vscode.nix
     ./settings.nix
-    ./style.nix
+    ./extensions.nix
   ];
 }

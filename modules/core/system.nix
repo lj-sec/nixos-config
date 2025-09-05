@@ -11,6 +11,7 @@
     wget
     curl
     git
+    tree
   ];
 
   time.timeZone = "America/New_York";
