@@ -16,5 +16,6 @@
     ./theme
     ./discord.nix
     ./vscode
+    ./signal.nix
   ];
 }
