@@ -35,7 +35,7 @@
         {
           type = "datetime";
           key = "Time";
-          format = "{14}:{17}:{20}";
+          format = "{hour-pretty}:{minute-pretty}:{second-pretty}";
         }
       ];
     };

@@ -17,5 +17,6 @@
     ./discord.nix
     ./vscode
     ./signal.nix
+    ./remmina.nix
   ];
 }

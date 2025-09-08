@@ -1,8 +1,10 @@
-{ ... }:
+{ config, ... }:
 let
+  p = config.colorScheme.palette;
   browser = "brave";
   terminal = "kitty";
-in {
+in
+{
   wayland.windowManager.hyprland = {
     settings = {
 
@@ -13,7 +15,6 @@ in {
         "swaync &"
         "swww-daemon &"
         "wl-clip-persist --clipboard both &"
-        "hyprctl setcursor Bibata-Modern-Ice 16 &"
         "hyprlock"
       ];
 
@@ -32,7 +33,7 @@ in {
         gaps_in = 3;
         gaps_out = 3;
         border_size = 1;
-        "col.active_border" = "rgb(98971A) rgb(CC241D) 45deg";
+        "col.active_border" = "rgb(${p.base08}) rgb(${p.base00}) 45deg";
         "col.inactive_border" = "0x00000000";
         # border_part_of_window = false;
         no_border_on_floating = false;
@@ -46,7 +47,7 @@ in {
         enable_swallow = true;
         focus_on_activate = false; # may be weird
         new_window_takes_over_fullscreen = 2;
-        middle_click_paste = true;
+        middle_click_paste = false;
       };
 
       dwindle = {
@@ -117,7 +118,7 @@ in {
           "fadeOut, 1, 3, fade_curve"
 
           # Workspaces
-          "workspaces, 1, 4, easeOutCubic, fade"
+          "workspaces, 1, 4, easeOutCubic, slide"
         ];
       };
 
@@ -130,8 +131,8 @@ in {
         "$mainMod, Return, exec, ${terminal}"
         "$mainMod, B, exec, ${browser}"
         "$mainMod, Q, killactive,"
-        "$mainMod, F, fullscreen, 0"
-        "$mainMod SHIFT, F, fullscreen, 1"
+        "$mainMod, F, fullscreen, 1"
+        "$mainMod SHIFT, F, fullscreen, 0"
         "$mainMod, D, exec, rofi -show drun || pkill rofi"
         "$mainMod, Escape, exec, hyprlock"
         "$mainMod, C, exec, hyprpicker -a"
@@ -197,7 +198,5 @@ in {
         force_zero_scaling = true;
       };
     };
-
   };
-
 }

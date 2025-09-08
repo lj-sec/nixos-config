@@ -11,5 +11,6 @@
     ./virtualization.nix
     ./steam.nix
     ./security.nix
+    ./greetd.nix
   ];
 }

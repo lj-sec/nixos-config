@@ -12,6 +12,7 @@
     curl
     git
     tree
+    jq
   ];
 
   time.timeZone = "America/New_York";

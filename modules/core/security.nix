@@ -10,6 +10,7 @@
     "polkit-1".fprintAuth = true;
     hyprlock.fprintAuth = true;
   };
+  
 
   environment.systemPackages = with pkgs; [
     fprintd

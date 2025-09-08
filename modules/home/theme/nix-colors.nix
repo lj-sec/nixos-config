@@ -3,5 +3,5 @@
   imports = [
     inputs.nix-colors.homeManagerModule
   ];
-  colorScheme = inputs.nix-colors.colorSchemes.rose-pine-moon;
+  colorScheme = inputs.nix-colors.colorSchemes.ayu-dark;
 }
