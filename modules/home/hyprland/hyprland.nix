@@ -18,6 +18,8 @@
   systemd.user.targets.hyprland-session.Unit.Wants = [
     "xdg-desktop-autostart.target"
   ];
+  
+  xdg.userDirs.enable = true;
 
   wayland.windowManager.hyprland = {
     enable = true; 

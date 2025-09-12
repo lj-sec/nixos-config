@@ -1,17 +1,22 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
+let
+  p = config.colorScheme.palette;
+in
 {
-  home.packages = [ pkgs.waypaper ];
+  home.packages = with pkgs; [
+    waypaper
+  ];
 
   xdg.configFile."waypaper/config.ini".text = ''
     [Settings]
     language = en
     folder = ~/repos/nixos-config/wallpapers
     monitors = all
-    wallpaper = ~/repos/nixos-config/wallpapers/wallpaper.jpg
+    wallpaper = ~/repos/nixos-config/wallpapers/redtree.jpg
     backend = swww
     fill = fill
     sort = name
-    color = #ffffff
+    color = #${p.base00}
     subfolders = False
     show_hidden = False
     show_gifs_only = False

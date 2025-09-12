@@ -1,22 +1,33 @@
 { ... }:
 {
   imports = [
+    # Wayland Compositor
     ./hyprland
+    # Custom taskbar
     ./waybar.nix
+    # Notifications
     ./swaync
+    # Terminal
     ./kitty.nix
+    # Application Launcher
     ./rofi.nix
+    # Git
     ./git.nix
-    ./browser.nix
+    # Brave Browser
+    ./brave.nix
+    # System Monitor
     ./btop.nix
+    # Wallpaper
     ./waypaper.nix
+    # Shell
     ./fish.nix
+    # System Fetcher
     ./fastfetch.nix
-    ./grim.nix
+    # GTK, cursor, fonts, nix-colors
     ./theme
-    ./discord.nix
+    # VSCodium themes, config
     ./vscode
-    ./signal.nix
-    ./remmina.nix
+    # All other packages with no config
+    ./packages.nix
   ];
 }

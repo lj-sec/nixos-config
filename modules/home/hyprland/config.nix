@@ -1,8 +1,9 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   p = config.colorScheme.palette;
   browser = "brave";
   terminal = "kitty";
+  ssDir="${config.home.homeDirectory}/Pictures/Screenshots";
 in
 {
   wayland.windowManager.hyprland = {
@@ -83,17 +84,12 @@ in
         
         shadow = {
           enabled = true;
-          ignore_window = true;
           offset = "0 2";
           range = 20;
           render_power = 3;
           color = "rgba(00000055)";
         };
       };
-
-      windowrulev2 = [
-        "opacity 0.75 0.75, class:^(dicsord)$"
-      ];
         
       animations = {
         enabled = true;
@@ -136,6 +132,12 @@ in
         "$mainMod, D, exec, rofi -show drun || pkill rofi"
         "$mainMod, Escape, exec, hyprlock"
         "$mainMod, C, exec, hyprpicker -a"
+        "$mainMod, T, togglefloating"
+
+        # Screenshots
+        "$mainMod, S, exec, grimblast --notify --freeze copy area"
+        "$mainMod SHIFT, S, exec, grimblast --notify --freeze save area ${ssDir}"
+        "$mainMod, A, exec, grimblast --notify --freeze save area - | swappy -f -"
 
         # Focus
         "$mainMod, h, movefocus, l"
@@ -182,6 +184,20 @@ in
         "$mainMod, mouse_up, workspace, e+1"
       ];
 
+      bindl = [
+        # Speaker volume (pamixer path)
+        ",XF86AudioRaiseVolume,exec,pamixer -i 5"
+        ",XF86AudioLowerVolume,exec,pamixer -d 5"
+        ",XF86AudioMute,exec,pamixer -t"
+
+        # Mic Mute
+        ",XF86AudioMicMute,exec,wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+
+        # Brightness
+        ",XF86MonBrightnessUp,exec,brightnessctl set +10%"
+        ",XF86MonBrightnessDown,exec,brightnessctl set 10%-"
+      ];
+
       bindm = [
         "$mainMod, mouse:272, movewindow"
         "$mainMod, mouse:273, resizewindow"
@@ -192,7 +208,7 @@ in
         "pin,title:^(Picture-in-Picture)$"
       ];
       
-      monitor = [ "=,preferred,auto,auto" ];
+      monitor = [ "eDP-1,preferred,auto,1" ];
 
       xwayland = {
         force_zero_scaling = true;

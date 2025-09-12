@@ -8,11 +8,8 @@
 
   environment.systemPackages = with pkgs; [
     vim
-    wget
     curl
     git
-    tree
-    jq
   ];
 
   time.timeZone = "America/New_York";

@@ -3,7 +3,7 @@ let
   p = config.colorScheme.palette; 
   custom = {
     font = "0xProto Nerd Font";
-    font_size    = "12px";
+    font_size    = "15px";
     font_weight  = "Bold";
     text_color   = "#${p.base05}";
     background_0 = "#${p.base00}";
@@ -134,7 +134,7 @@ in
         tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         calendar = {
           format = {
-            today = "<span color='#98971A'><b>{}</b></span>";
+            today = "<span color='${yellow}'><b>{}</b></span>";
           };
         };
       };
@@ -184,8 +184,8 @@ in
         format-disconnected = "<span foreground='${magenta}'>󰌙b </span>";
       };
       tray = {
-        icon-size = 20;
-        spacing = 8;
+        icon-size = 15;
+        spacing = 10;
       };
       pulseaudio = {
         format = "  {volume}%";
@@ -208,7 +208,7 @@ in
         tooltip-format = "{time}";
       };
       "custom/launcher" = {
-        format = "󰌧";
+        format = "";
         on-click = "rofi -show drun";
         tooltip = true;
         tooltip-format = "Run Rofi";

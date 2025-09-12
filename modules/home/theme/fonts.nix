@@ -2,7 +2,8 @@
 {
   fonts.fontconfig.enable = true;
 
-  home.packages = [
-    pkgs.nerd-fonts._0xproto
+  home.packages = with pkgs; [
+    nerd-fonts._0xproto
+    corefonts
   ];
 }

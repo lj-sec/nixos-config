@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }:
 {
-  # Brave is unfree
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkgs) [ "brave" "brave-browser" ];
-  home.packages = [ pkgs.brave ];
+  home.packages = with pkgs; [ 
+    brave
+  ];
 
   # Make Brave default
   xdg.mimeApps = {

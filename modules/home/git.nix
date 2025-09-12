@@ -11,5 +11,7 @@
       credential.helper = "!gh auth git-credential";
     };
   };
-  home.packages = [ pkgs.gh ];
+  home.packages = with pkgs; [
+    gh
+  ];
 }
