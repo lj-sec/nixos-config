@@ -35,7 +35,6 @@ in
     };
 
     functions = {
-      # Keep the greeting; do NOT set the fish_greeting universal var
       fish_greeting.body = ''
         if command -q fastfetch
           status --is-interactive; and test -t 1
@@ -88,6 +87,8 @@ in
         echo \n$line1
         echo $line2
       end
+      
+      pay-respects fish --alias | source
     '';
   };
 }

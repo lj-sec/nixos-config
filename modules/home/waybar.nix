@@ -168,13 +168,13 @@ in
         format = "<span foreground='${green}'> </span> {usage}%";
         format-alt = "<span foreground='${green}'> </span> {avg_frequency} GHz";
         interval = 2;
-        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --override font_size=14 --title float_kitty btop'";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty btop'";
       };
       memory = {
         format = "<span foreground='${cyan}'> </span> {}%";
         format-alt = "<span foreground='${cyan}'> </span> {used} GiB";
         interval = 2;
-        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --override font_size=14 --title float_kitty btop'";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty btop'";
       };
       network = {
         format-wifi = "<span foreground='${magenta}'> </span> {signalStrength}%";
@@ -182,6 +182,7 @@ in
         tooltip-format = "Connected to {essid} {ifname} via {gwaddr}";
         format-linked = " {ifname} (No IP)";
         format-disconnected = "<span foreground='${magenta}'>󰌙b </span>";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty nmtui'";
       };
       tray = {
         icon-size = 15;
@@ -206,10 +207,11 @@ in
         format-time = "{H}h{M}m";
         tooltip = true;
         tooltip-format = "{time}";
+        on-click-right = "cpupower-gui";
       };
       "custom/launcher" = {
         format = "";
-        on-click = "rofi -show drun";
+        on-click = "rofi -show drun || pkill rofi";
         tooltip = true;
         tooltip-format = "Run Rofi";
       };

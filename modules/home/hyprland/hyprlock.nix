@@ -2,6 +2,7 @@
 let
   p = config.colorScheme.palette;
   withA = hex: aa: "#${hex}${aa}";
+  font = "0xProto Nerd Font";
 in
 {
   programs.hyprlock = {
@@ -28,33 +29,19 @@ in
           vibrancy_darkness = 0.0;
         }
       ];
-
-      shape = [
-        # User box
-        {
-          monitor = "";
-          size = "300, 50";
-          color = withA p.base01 "55";
-          rounding = 10;
-          border_color = withA p.base00 "00";
-          position = "0, 120";
-          halign = "center";
-          valign = "bottom";
-        }
-      ];
     
       label = [
         # Time
         {
           monitor = "";
-          text = ''cmd[update:1000] echo "$(date +'%H:%M')"'';
+          text = ''cmd[update:1000] echo " $(date +'%H:%M')"'';
           color = "#${p.base05}";
           font_size = 115;
-          font_family = "Maple Mono Bold";
+          font_family = "${font}";
           shadow_passes = 3;
-          position = "0, -25";
+          position = "250, -50";
           halign = "center";
-          valign = "top";
+          valign = "center";
         }
         # Date
         {
@@ -62,10 +49,10 @@ in
           text = ''cmd[update:60000] echo "- $(date +'%A, %B %d') -" '';
           color = "#${p.base04}";
           font_size = 18;
-          font_family = "Maple Mono";
-          position = "0, -225";
+          font_family = "${font}";
+          position = "250, -150";
           halign = "center";
-          valign = "top";
+          valign = "center";
         }
         # Username
         {
@@ -73,7 +60,7 @@ in
           text = "$USER";
           color = "#${p.base06}";
           font_size = 15;
-          font_family = "Maple Mono Bold";
+          font_family = "${font}";
           position = "0, 131";
           halign = "center";
           valign = "bottom";
@@ -86,24 +73,21 @@ in
           size = "300, 50";
           outline_thickness = 1;
           rounding = 10;
-          
+
           outer_color = withA p.base01 "33";
           inner_color = withA p.base01 "33";
           color = "#${p.base0D}";
           font_color = "#${p.base05}";
           fail_color = "#${p.base08}";
+          fail_text = "$FAIL";
+          fail_transition = 300;
           font_size = 14;
-          font_family = "Maple Mono Bold";
+          font_family = "${font}";
 
           hide_input = true;
-          placeholder_text = ''<i><span foreground="#${p.base0B}">Press Enter to authenticate</span></i>'';
+          placeholder_text = ''Press Enter to authenticate'';
 
-          "fingerprint:enabled" = true;
-          "fingerprint:ready_message" = "Press finger to unlock";
-          "fingerprint:present_message" = "Scanning fingerprint...";
-          "fingerprint:retry_delay" = 250;
-
-          position = "0, 131";
+          position = "0, 125";
           halign = "center";
           valign = "bottom";
         }
