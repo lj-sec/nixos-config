@@ -9,6 +9,8 @@
     ./swaync
     # Terminal
     ./kitty.nix
+    # File explorer
+    ./nemo.nix
     # Application Launcher
     ./rofi.nix
     # Git

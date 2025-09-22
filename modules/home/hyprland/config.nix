@@ -133,6 +133,7 @@ in
         "$mainMod, Escape, exec, hyprlock"
         "$mainMod, C, exec, hyprpicker -a"
         "$mainMod, T, togglefloating"
+        "$mainMod, N, exec, sticky -n"
 
         # Screenshots
         "$mainMod, S, exec, grimblast --notify --freeze copy area"
@@ -206,6 +207,11 @@ in
       windowrule = [
         "float,title:^(Picture-in-Picture)$"
         "pin,title:^(Picture-in-Picture)$"
+      ];
+
+      windowrulev2 = [
+        "float, class:^(?i)sticky.py$"
+        "size 200 200, class:^(?i)sticky.py$"
       ];
       
       monitor = [ "eDP-1,preferred,auto,1" ];

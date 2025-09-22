@@ -2,6 +2,7 @@
 {
   imports = [
     ./bootloader.nix
+    ./bluetooth.nix
     ./home.nix
     ./network.nix
     ./pipewire.nix

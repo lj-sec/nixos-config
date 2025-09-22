@@ -5,10 +5,6 @@
     swww
     inputs.hypr-contrib.packages.${pkgs.system}.grimblast
     inputs.hyprpicker.packages.${pkgs.system}.hyprpicker
-    grim
-    slurp
-    wl-clip-persist
-    cliphist
     wf-recorder
     glib
     wayland

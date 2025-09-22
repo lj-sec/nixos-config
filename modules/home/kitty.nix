@@ -53,5 +53,13 @@ in
 
       confirm_os_window_close = 0;
     };
+    keybindings = {
+      "ctrl+shift+c" = "copy_to_clipboard";
+      "ctrl+shift+v" = "paste_from_clipboard";
+    };
+    extraConfig = ''
+      mouse_map right  press paste_from_clipboard
+      mouse_map middle press paste_from_selection
+    '';
   };
 }

@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, username, ... }:
 let
   p = config.colorScheme.palette; 
   custom = {

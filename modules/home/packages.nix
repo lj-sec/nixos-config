@@ -6,17 +6,19 @@
     # Desktop Environment
     #
     ## Clipboard
+    wl-clip-persist
+    cliphist
     wl-clipboard
     ## File Explorer
-    nemo
-    yazi
+    yazi              # For the CLI
     ## Media
-    gimp
-    mpv
-    imv
-    ffmpeg
-    inkscape
-    obs-studio
+    gimp              # Image editor
+    mpv               # Video player
+    imv               # Image player
+    ffmpeg            # duh
+    inkscape          # PDF handler, mainly, but a LOT can be done w/
+    obs-studio        # Screen recording
+    sticky            # Sticky Notes!
     ## Screenshots
     grim
     swappy
@@ -25,26 +27,29 @@
     #
     ## Utils
     wget
-    eza
-    swappy
+    eza               # better ls
     killall
     file
     jq
     tree
-    bat
+    bat               # better cat
     fzf
+    whois
     dnsutils
     net-tools
     util-linux
+    ## Languages
+    powershell
     ## Compression
     unzip
     gnutar
+    p7zip
     ## Network
     wireguard-tools
     proxychains-ng
     ## Goofy
-    sl
-    pay-respects
+    sl                # choo-choo
+    pay-respects      # f
     asciiquarium-transparent
     cowsay
     pipes
@@ -55,11 +60,12 @@
     ## Communication
     discord
     signal-desktop
+    slack
     ## Remote Management
     remmina
     ## Office
     libreoffice-fresh
-    hunspell
+    hunspell          # For spellcheck
     hunspellDicts.en_US
 
     # Security

@@ -7,10 +7,10 @@
       "window.titleBarStyle" = "custom";
 
       "window.menuBarVisibility" = "toggle";
-      "editor.FontFamily" = "'Maple Mono', 'SymbolsNerdFont', 'monospace', monospace";
+      "editor.FontFamily" = "JetBrainsMono Nerd Font, monospace";
       "terminal.integrated.fontFamily" = "'Maple Mono', 'SymbolsNerdFont'";
       "editor.fontSize" = 16;
-      "workbench.colorTheme" = "Rose Pine Moon";
+      "workbench.colorTheme" = "Ayu Dark";
       "explorer.confirmDragAndDrop" = false;
     };
   };
