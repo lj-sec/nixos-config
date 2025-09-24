@@ -3,7 +3,7 @@ let
   p = config.colorScheme.palette; 
   custom = {
     font = "0xProto Nerd Font";
-    font_size    = "15px";
+    font_size    = "16px";
     font_weight  = "Bold";
     text_color   = "#${p.base05}";
     background_0 = "#${p.base00}";
@@ -193,21 +193,30 @@ in
         format-muted = "<span foreground='${blue}'> </span> {volume}%";
         scroll-step = 2;
         on-click = "pamixer -t";
-        on-click-right = "pavucontrol";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
       battery = {
         format = "<span foreground='${yellow}'>󰁹 </span> {capacity}%";
         format-charging = "<span foreground='${yellow}'>󰂄 </span> {capacity}%";
         format-full = "<span foreground='${yellow}'>󰂅 </span> {capacity}%";
-        format-warning = "<span foreground='${yellow}'> </span> {capacity}%";
+        format-almost = "<span foreground='${yellow}'>󰂂 </span> {capacity}%";
+        format-threequarter = "<span foreground='${yellow}'>󰂀 </span> {capacity}%";
+        format-half = "<span foreground='${yellow}'>󰁾 </span> {capacity}%";
+        format-quarter = "<span foreground='${yellow}'>󰁻 </span> {capacity}%";
+        format-warning = "<span foreground='${red}'>󰂎!</span> {capacity}%";
         interval = 5;
         states = {
-          warning = 25;
+          full = 100;
+          almost = 90;
+          threequarter = 75;
+          half = 50;
+          quarter = 25;
+          warning = 10;
         };
-        format-time = "{H}h{M}m";
+        format-time = "Time Left: {H}h{M}m";
         tooltip = true;
         tooltip-format = "{time}";
-        on-click-right = "cpupower-gui";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
       };
       "custom/launcher" = {
         format = "";

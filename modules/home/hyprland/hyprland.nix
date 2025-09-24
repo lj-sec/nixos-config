@@ -9,6 +9,7 @@
     glib
     wayland
     direnv
+    hyprshade
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [

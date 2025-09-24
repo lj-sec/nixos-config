@@ -6,7 +6,7 @@
     # Custom taskbar
     ./waybar.nix
     # Notifications
-    ./swaync
+    ./swaync.nix
     # Terminal
     ./kitty.nix
     # File explorer

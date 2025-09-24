@@ -12,8 +12,28 @@
 
       listener = [
         {
+          timeout = 280;
+          on-timeout = "hyprshade on dim20";
+          on-resume = "hyprshade off";
+        }
+        {
+          timeout = 290;
+          on-timeout = "hyprshade on dim40";
+          on-resume = "hyprshade off";
+        }
+        {
           timeout = 300;
           on-timeout = "hyprlock";
+        }
+        {
+          timeout = 880;
+          on-timeout = "hyprshade on dim20";
+          on-resume = "hyprshade off";
+        }
+        {
+          timeout = 890;
+          on-timeout = "hyprshade on dim40";
+          on-resume = "hyprshade off";
         }
         {
           timeout = 900;
