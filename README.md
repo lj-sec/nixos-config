@@ -1,3 +1,19 @@
+<div align="center">
+
+<p align="center">
+  <a href="https://github.com/lj-sec" target="_blank">
+    <img src="./.github/assets/nix-snowflake.png"/>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/lj-sec">
+    <img src="https://img.shields.io/github/followers/lj-sec?label=Follow%20@lj-sec&style=social" alt="Follow @lj-sec"/>
+  </a>
+</p>
+
+</div>
+
 # nixos-config
 
 This repository contains my personal NixOS configuration, managed declaratively with flakes and home-manager.
@@ -6,12 +22,12 @@ This repository contains my personal NixOS configuration, managed declaratively 
 
 ### Background 1
 
-![Background1](./screenshots/screenshot1.png)
+![Background1](./.github/screenshots/screenshot1.png)
 With VSCodium, btop, asciiquarium, and Kitty.
 
 ### Background 2
 
-![Background2](./screenshots/screenshot2.png)
+![Background2](./.github/screenshots/screenshot2.png)
 With Rofi (App Launcher), Steam, yazi, and virt-manager.
 
 ## Disclamer
@@ -55,7 +71,8 @@ git clone https://github.com/lj-sec/nixos-config.git
 cd nixos-config
 sudo nixos-rebuild switch --flake .#t14g5-nixos
 ```
-⚠️ This configuration is tailored to my hardware. You will need to adjust hosts/<your-host>/hardware-configuration.nix and other modules for your setup.
+> [!CAUTION]
+> ⚠️ This configuration is tailored to my hardware. You will need to adjust hosts/<your-host>/hardware-configuration.nix and other modules for your setup.
 
 ## Shoutout
 
