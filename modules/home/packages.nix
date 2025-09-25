@@ -67,6 +67,8 @@
     libreoffice-fresh
     hunspell          # For spellcheck
     hunspellDicts.en_US
+    # Music
+    spotify
 
     # Security
     #

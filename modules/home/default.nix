@@ -29,6 +29,8 @@
     ./theme
     # VSCodium themes, config
     ./vscode
+    # Password manager
+    ./pass.nix
     # All other packages with no config
     ./packages.nix
   ];

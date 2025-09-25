@@ -27,82 +27,49 @@ in
     enable = true;
 
     style = with custom; ''
-      * {
+      /* Compact left-stripe pills */
+      #cpu, #memory, #network, #battery, #pulseaudio, #custom-swaync {
         background: ${background_0};
-        border: none;
-        border-radius: 0px;
-        padding: 0;
-        margin: 0;
-        font-family: "${font}";
-        font-weight: ${font_weight};
-        opacity: ${opacity};
-        font-size: ${font_size};
-      }
-  
-      window#waybar {
-        background: ${background_1};
-      }
-  
-      tooltip {
-        background: ${background_0};
-        border: 1px solid ${border_color};
-      }
-      tooltip label {
-        margin: 5px;
-        color: ${text_color};
-      }
-  
-      #workspaces {
-        padding-left: 15px;
-      }
-      #workspaces button {
-        color: ${yellow};
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-right: 10px;
-      }
-      #workspaces button.empty {
-        color: ${text_color};
-      }
-      #workspaces button.active {
-        color: ${orange};
+        margin: 3px 2px;
+        padding: 4px 8px;
+        border-radius: 10px;
       }
 
-      #clock {
-        color: ${text_color};
-      }
-  
-      #tray {
-        margin-left: 10px;
-        color: ${text_color};
-      }
-      #tray menu {
-        background: ${background_1};
+      /* Thinner stripes to match the smaller padding */
+      #cpu           { box-shadow: inset 3px 0 0 0 ${green};   }
+      #memory        { box-shadow: inset 3px 0 0 0 ${cyan};    }
+      #network       { box-shadow: inset 3px 0 0 0 ${magenta}; }
+      #battery       { box-shadow: inset 3px 0 0 0 ${yellow};  }
+      #pulseaudio    { box-shadow: inset 3px 0 0 0 ${blue};    }
+      #custom-swaync { box-shadow: inset 3px 0 0 0 ${orange};  }
+
+      /* Hover stays subtle */
+      #cpu:hover           { box-shadow: inset 4px 0 0 0 ${green};   }  /* was 6px */
+      #memory:hover        { box-shadow: inset 4px 0 0 0 ${cyan};    }
+      #network:hover       { box-shadow: inset 4px 0 0 0 ${magenta}; }
+      #battery:hover       { box-shadow: inset 4px 0 0 0 ${yellow};  }
+      #pulseaudio:hover    { box-shadow: inset 4px 0 0 0 ${blue};    }
+      #custom-swaync:hover { box-shadow: inset 4px 0 0 0 ${orange};  }
+
+      /* State tweaks */
+      #battery.charging                               { box-shadow: inset 3px 0 0 0 ${green}; }
+      #battery.charging:hover                         { box-shadow: inset 4px 0 0 0 ${green}; }
+      #battery.warning, #battery.critical             { box-shadow: inset 3px 0 0 0 ${red};   }
+      #battery.warning:hover, #battery.critical:hover { box-shadow: inset 4px 0 0 0 ${red};   }
+      #network.disconnected                           { box-shadow: inset 3px 0 0 0 ${red};   }
+      #network.disabled                               { box-shadow: inset 3px 0 0 0 ${border_color}; }
+
+      /* Tray + clock compact too */
+      #tray, #clock {
+        background: ${background_0};
+        margin: 3px 2px;
+        padding: 4px 8px;
+        border-radius: 10px;
         border: 1px solid ${border_color};
-        padding: 8px;
-      }
-      #tray menuitem {
-        padding: 1px;
-      }
-  
-      #pulseaudio, #network, #cpu, #memory, #battery {
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-right: 10px;
-        color: ${text_color};
-      }
-   
-      #pulseaudio {
-        margin-left: 15px;
       }
 
-      #custom-launcher {
-        font-size: ${font_size};
-        color: ${text_color};
-        font-weight: bold;
-        margin-left: 15px;
-        padding-right: 10px;
-      }
+      /* Ensure GTK doesn’t enforce extra height anywhere */
+      * { min-height: 0; }
     '';
   
     settings.mainBar = with custom; {
@@ -126,6 +93,7 @@ in
         "pulseaudio"
         "network"
         "battery"
+        "custom/swaync"
       ];
       clock = {
         format = " {:%H:%M}";
@@ -143,6 +111,7 @@ in
         disable-scroll = true;
         format = "{icon}";
         on-click = "activate";
+        sort-by-number = true;
         format-icons = {
           "1" = "I";
           "2" = "II";
@@ -154,7 +123,6 @@ in
           "8" = "VIII";
           "9" = "IX";
           "10" = "X";
-          sort-by-number = true;
         };
         persistent-workspaces = {
           "1" = [ ];
@@ -181,8 +149,8 @@ in
         format-ethernet = "<span foreground='${magenta}'>󰈀 </span>";
         tooltip-format = "Connected to {essid} {ifname} via {gwaddr}";
         format-linked = " {ifname} (No IP)";
-        format-disconnected = "<span foreground='${magenta}'>󰌙b </span>";
-        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty nmtui'";
+        format-disconnected = "<span foreground='${magenta}'>󰌙 </span>";
+        on-click = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty nmtui'";
       };
       tray = {
         icon-size = 15;
@@ -196,18 +164,18 @@ in
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
       battery = {
-        format = "<span foreground='${yellow}'>󰁹 </span> {capacity}%";
-        format-charging = "<span foreground='${yellow}'>󰂄 </span> {capacity}%";
-        format-full = "<span foreground='${yellow}'>󰂅 </span> {capacity}%";
-        format-almost = "<span foreground='${yellow}'>󰂂 </span> {capacity}%";
-        format-threequarter = "<span foreground='${yellow}'>󰂀 </span> {capacity}%";
-        format-half = "<span foreground='${yellow}'>󰁾 </span> {capacity}%";
-        format-quarter = "<span foreground='${yellow}'>󰁻 </span> {capacity}%";
-        format-warning = "<span foreground='${red}'>󰂎!</span> {capacity}%";
+        format = "<span foreground='${yellow}'>󰁹</span> {capacity}%";
+        format-charging = "<span foreground='${yellow}'>󰂄</span> {capacity}%";
+        format-full = "<span foreground='${yellow}'>󰂅</span> {capacity}%";
+        format-almost = "<span foreground='${yellow}'>󰂂</span> {capacity}%";
+        format-threequarter = "<span foreground='${yellow}'>󰂀</span> {capacity}%";
+        format-half = "<span foreground='${yellow}'>󰁾</span> {capacity}%";
+        format-quarter = "<span foreground='${yellow}'>󰁻</span> {capacity}%";
+        format-warning = "<span foreground='${red}'>󰂎!</span>{capacity}%";
         interval = 5;
         states = {
           full = 100;
-          almost = 90;
+          almost = 99;
           threequarter = 75;
           half = 50;
           quarter = 25;
@@ -216,13 +184,18 @@ in
         format-time = "Time Left: {H}h{M}m";
         tooltip = true;
         tooltip-format = "{time}";
-        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
+        on-click = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
       };
       "custom/launcher" = {
         format = "";
         on-click = "rofi -show drun || pkill rofi";
         tooltip = true;
         tooltip-format = "Run Rofi";
+      };
+      "custom/swaync" = {
+        format = "";
+        on-click = "sh -c 'sleep 0.1; swaync-client -t -sw'";
+        on-click-right = "swaync-client -C";
       };
     }; 
   };
