@@ -57,6 +57,8 @@
 
     # GUI Tools
     #
+    ## Calendar
+    gnome-calendar
     ## Communication
     discord
     signal-desktop

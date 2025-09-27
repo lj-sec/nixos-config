@@ -25,8 +25,41 @@ in
   programs.waybar = {
 
     enable = true;
-
     style = with custom; ''
+
+      * {
+        font-family: "${font}";
+        font-weight: ${font_weight};
+        font-size: ${font_size};
+        opacity: ${opacity};
+        min-height: 0;
+      }
+
+      window#waybar {
+        background: ${background_1};
+      }
+
+      #workspaces {
+        padding-left: 15px;
+      }
+      #workspaces button {
+        color: ${yellow};
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-right: 10px;
+      }
+      #workspaces button.empty {
+        color: ${text_color};
+      }
+      #workspaces button.active {
+        color: ${orange};
+      }
+
+      #custom-launcher {
+        margin-left: 15px;
+        padding-right: 10px;
+      }
+
       /* Compact left-stripe pills */
       #cpu, #memory, #network, #battery, #pulseaudio, #custom-swaync {
         background: ${background_0};
@@ -67,11 +100,8 @@ in
         border-radius: 10px;
         border: 1px solid ${border_color};
       }
-
-      /* Ensure GTK doesn’t enforce extra height anywhere */
-      * { min-height: 0; }
     '';
-  
+
     settings.mainBar = with custom; {
       position = "top";
       layer = "top";
@@ -105,6 +135,7 @@ in
             today = "<span color='${yellow}'><b>{}</b></span>";
           };
         };
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] gnome-calendar'";
       };
       "hyprland/workspaces" = {
         active-only = false;
@@ -164,14 +195,15 @@ in
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
       battery = {
-        format = "<span foreground='${yellow}'>󰁹</span> {capacity}%";
-        format-charging = "<span foreground='${yellow}'>󰂄</span> {capacity}%";
-        format-full = "<span foreground='${yellow}'>󰂅</span> {capacity}%";
-        format-almost = "<span foreground='${yellow}'>󰂂</span> {capacity}%";
+        format =          "<span foreground='${yellow}'>󰁹</span> {capacity}%";
+        format-charging = "<span foreground='${green}'>󰂄</span> {capacity}%";
+        format-full =     "<span foreground='${green}'>󰂅</span> {capacity}%";
+        format-almost =   "<span foreground='${yellow}'>󰂂</span> {capacity}%";
         format-threequarter = "<span foreground='${yellow}'>󰂀</span> {capacity}%";
-        format-half = "<span foreground='${yellow}'>󰁾</span> {capacity}%";
-        format-quarter = "<span foreground='${yellow}'>󰁻</span> {capacity}%";
-        format-warning = "<span foreground='${red}'>󰂎!</span>{capacity}%";
+        format-half =     "<span foreground='${yellow}'>󰁾</span> {capacity}%";
+        format-quarter =  "<span foreground='${yellow}'>󰁻</span> {capacity}%";
+        format-warning =  "<span foreground='${red}'>󰂎 </span>{capacity}%";
+        format-critical = "<span foreground='${red}'>󰂎!</span>{capacity}%";
         interval = 5;
         states = {
           full = 100;
@@ -180,6 +212,7 @@ in
           half = 50;
           quarter = 25;
           warning = 10;
+          critical = 5;
         };
         format-time = "Time Left: {H}h{M}m";
         tooltip = true;
