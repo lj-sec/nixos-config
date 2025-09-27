@@ -59,6 +59,8 @@
     #
     ## Calendar
     gnome-calendar
+    ## Markdown
+    obsidian
     ## Communication
     discord
     signal-desktop
