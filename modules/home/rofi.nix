@@ -3,7 +3,7 @@ let
   p = config.colorScheme.palette;
 in
 {
-  home.packages = with pkgs; [ rofi-wayland ];
+  home.packages = with pkgs; [ rofi ];
 
   xdg.configFile."rofi/theme.rasi".text = ''
     * {

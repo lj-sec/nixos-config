@@ -103,6 +103,7 @@ Testing on virtual machines and my personal desktop is in progress, with new hos
 > [!CAUTION]  
 > This configuration is tailored to my hardware, relies heavily on fingerprint authentication, and sits on top of btrfs.  
 > You will need to adjust `hosts/<your-host>/hardware-configuration.nix` and other modules for your setup.
+> You will also need to create your own swapfile or adjust the path(s) in `modules/core/sleep.nix`
 
 To attempt to apply this configuration on your own system:
 ```bash

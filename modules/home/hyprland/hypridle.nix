@@ -1,47 +1,56 @@
-{ ... }:
 {
   services.hypridle = {
-    enable  = true;
-    
+    enable = true;
     settings = {
       general = {
         after_sleep_cmd = "hyprctl dispatch dpms on";
-        ignore_dbus_inhibbit = false;
+        before_sleep_cmd = "loginctl lock-session";
+        ignore_dbus_inhibit = false;
         lock_cmd = "hyprlock";
       };
 
       listener = [
+        # 4m20s: light dim
+        {
+          timeout = 260;
+          on-timeout = "hyprshade on dim20";
+          on-resume  = "hyprshade off";
+        }
+        # 4m40s: deeper dim
         {
           timeout = 280;
-          on-timeout = "hyprshade on dim20";
-          on-resume = "hyprshade off";
-        }
-        {
-          timeout = 290;
           on-timeout = "hyprshade on dim40";
-          on-resume = "hyprshade off";
+          on-resume  = "hyprshade off";
         }
+        # 5m: lock; keep the dim on until later
         {
           timeout = 300;
           on-timeout = "hyprlock";
         }
+        # 10m50s: re-dim in case it woke briefly
         {
-          timeout = 880;
+          timeout = 650;
           on-timeout = "hyprshade on dim20";
-          on-resume = "hyprshade off";
+          on-resume  = "hyprshade off";
         }
+        # 11m15s: deeper dim again
         {
-          timeout = 890;
+          timeout = 675;
           on-timeout = "hyprshade on dim40";
-          on-resume = "hyprshade off";
+          on-resume  = "hyprshade off";
         }
+        # 11m40s: turn displays off
         {
-          timeout = 900;
+          timeout = 700;
           on-timeout = "hyprctl dispatch dpms off";
-          on-resume = "hyprctl dispatch dpms on";
+          on-resume  = "hyprctl dispatch dpms on; hyprshade off";
+        }
+        # 12m5s: go to sleep (then hibernate via systemd)
+        {
+          timeout = 725;
+          on-timeout = "systemctl suspend-then-hibernate";
         }
       ];
     };
-
   };
 }

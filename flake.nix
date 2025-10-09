@@ -36,7 +36,6 @@
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
-
   let
     username = "curse";
     system = "x86_64-linux";
@@ -49,10 +48,25 @@
     lib = nixpkgs.lib;
 
   in {
+    overlays = {
+      waybar-lyric-fix = final: prev: {
+        waybar-lyric = prev.waybar-lyric.overrideAttrs (_: {
+          src = prev.fetchFromGitHub {
+            owner = "Nadim147c";
+            repo  = "waybar-lyric";
+            rev   = "v0.11.0";
+            hash  = "sha256-4qQ2b9xLcuqiN1U2AYDXEoaqWvy/o+MgTF3Zh0YPLCo=";
+          };
+        });
+      };
+    };
     nixosConfigurations = {
       t14g5-nixos = lib.nixosSystem {
         inherit system;
-        modules = [ ./hosts/t14g5-nixos ];
+        modules = [ 
+          { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
+          ./hosts/t14g5-nixos
+        ];
         specialArgs = {
           host = "t14g5-nixos";
           inherit self inputs username;

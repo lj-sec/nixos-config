@@ -4,8 +4,8 @@
     # Make toolkits/apps prefer Wayland
     SDL_VIDEODRIVER = "wayland";
     XDG_SESSION_TYPE = "wayland";
-    XDG_CURRENT_DESKTOP = "hyprland";
-    XDG_SESSION_DESKTOP = "hyprland";
+    # XDG_CURRENT_DESKTOP = "hyprland";
+    # XDG_SESSION_DESKTOP = "hyprland";
 
     # GTK theming
     GDK_SCALE = 1;

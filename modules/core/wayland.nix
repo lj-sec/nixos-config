@@ -9,13 +9,8 @@
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
-    config = {
-      common.default = [ "gtk" ];
-      hyprland.default = [
-        "gtk"
-        "hyprland"
-      ];
-    };
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    # Make the Hyprland backend the primary, GTK as fallback for file dialogs, etc.
+    config.common.default = [ "hyprland" "gtk" ];
   };
 }

@@ -1,5 +1,4 @@
 { config, pkgs, inputs, ... }:
-
 {
   home.packages = with pkgs; [
     swww
@@ -10,6 +9,7 @@
     wayland
     direnv
     hyprshade
+    waybar-lyric
   ];
 
   systemd.user.targets.hyprland-session.Unit.Wants = [

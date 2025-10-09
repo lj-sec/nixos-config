@@ -6,17 +6,28 @@ let
   ssDir="${config.home.homeDirectory}/Pictures/Screenshots";
 in
 {
+
+  home.file.".config/hypr/autostart.sh" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+      hyprlock                     # blocks until unlocked
+      waybar &                     # start the rest after unlock
+      swaync &
+      swww-daemon &
+      hyprctl dispatch exec "[workspace 5 silent] spotify" # waybar-lyric eats cpu unless spotify is launched
+      wl-clip-persist --clipboard both &
+    '';
+  };
+
   wayland.windowManager.hyprland = {
     settings = {
 
       exec-once = [
         "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        "waybar &"
-        "swaync &"
-        "swww-daemon &"
-        "wl-clip-persist --clipboard both &"
-        "hyprlock"
+        "$HOME/.config/hypr/autostart.sh"
       ];
 
       input = {

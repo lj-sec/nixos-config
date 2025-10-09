@@ -1,5 +1,6 @@
 { config, pkgs,... }:
 {
+  services.dbus.enable = true;
   security.polkit.enable = true;
   services.fwupd.enable = true;
   services.fprintd.enable = true;

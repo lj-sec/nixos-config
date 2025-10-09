@@ -60,8 +60,16 @@ in
         padding-right: 10px;
       }
 
+      #custom-lyrics {
+        margin: 0 6px;
+        padding: 0 10px;
+      }
+      #custom-lyrics.paused {
+        opacity: 0.7;
+      }
+
       /* Compact left-stripe pills */
-      #cpu, #memory, #network, #battery, #pulseaudio, #custom-swaync {
+      #custom-lyrics, #cpu, #memory, #network, #battery, #pulseaudio, #custom-swaync {
         background: ${background_0};
         margin: 3px 2px;
         padding: 4px 8px;
@@ -69,7 +77,9 @@ in
       }
 
       /* Thinner stripes to match the smaller padding */
-      #cpu           { box-shadow: inset 3px 0 0 0 ${green};   }
+      #custom-lyrics { box-shadow: inset 3px 0 0 0 ${green},
+                                   inset -3px 0 0 0 ${green};  }
+      #cpu           { box-shadow: inset 3px 0 0 0 ${red};     }
       #memory        { box-shadow: inset 3px 0 0 0 ${cyan};    }
       #network       { box-shadow: inset 3px 0 0 0 ${magenta}; }
       #battery       { box-shadow: inset 3px 0 0 0 ${yellow};  }
@@ -77,7 +87,9 @@ in
       #custom-swaync { box-shadow: inset 3px 0 0 0 ${orange};  }
 
       /* Hover stays subtle */
-      #cpu:hover           { box-shadow: inset 4px 0 0 0 ${green};   }  /* was 6px */
+      #custom-lyrics:hover { box-shadow: inset 4px 0 0 0 ${green},
+                                         inset -4px 0 0 0 ${green};  }
+      #cpu:hover           { box-shadow: inset 4px 0 0 0 ${red};     }
       #memory:hover        { box-shadow: inset 4px 0 0 0 ${cyan};    }
       #network:hover       { box-shadow: inset 4px 0 0 0 ${magenta}; }
       #battery:hover       { box-shadow: inset 4px 0 0 0 ${yellow};  }
@@ -112,10 +124,11 @@ in
       modules-left = [
         "custom/launcher"
         "hyprland/workspaces"
+        "clock"
         "tray"
       ];
       modules-center = [
-        "clock"
+        "custom/lyrics"
       ];
       modules-right = [
         "cpu"
@@ -164,8 +177,8 @@ in
         };
       };
       cpu = {
-        format = "<span foreground='${green}'> </span> {usage}%";
-        format-alt = "<span foreground='${green}'> </span> {avg_frequency} GHz";
+        format = "<span foreground='${red}'> </span> {usage}%";
+        format-alt = "<span foreground='${red}'> </span> {avg_frequency} GHz";
         interval = 2;
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty btop'";
       };
@@ -180,7 +193,7 @@ in
         format-ethernet = "<span foreground='${magenta}'>󰈀 </span>";
         tooltip-format = "Connected to {essid} {ifname} via {gwaddr}";
         format-linked = " {ifname} (No IP)";
-        format-disconnected = "<span foreground='${magenta}'>󰌙 </span>";
+        format-disconnected = "<span foreground='${red}'>󰌙 </span>";
         on-click = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty nmtui'";
       };
       tray = {
@@ -229,6 +242,17 @@ in
         format = "";
         on-click = "sh -c 'sleep 0.1; swaync-client -t -sw'";
         on-click-right = "swaync-client -C";
+      };
+      "custom/lyrics" = {
+        return-type = "json";
+        format = "<span foreground='${green}'>󰐎  </span> {text}";
+        format-alt = "<span foreground='${green}'>󰐎  </span> {text}";
+        hide-empty-text = true;
+        escape = true;
+        tooltip = false;
+        exec-if = "which waybar-lyric";
+        exec = "waybar-lyric --quiet -m150";
+        on-click = "waybar-lyric --toggle";
       };
     }; 
   };

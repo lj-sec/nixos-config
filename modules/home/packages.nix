@@ -37,6 +37,7 @@
     whois
     dnsutils
     net-tools
+    traceroute
     util-linux
     ## Languages
     powershell
