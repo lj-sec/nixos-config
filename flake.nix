@@ -72,6 +72,17 @@
           inherit self inputs username;
         };
       };
+      omen30l-nixos = lib.nixosSystem {
+        inherit system;
+        modules = [
+          { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
+          ./hosts/omen30l-nixos 
+        ];
+        specialArgs = {
+          host = "omen30l-nixos";
+          inherit self inputs username;
+        };
+      };
     };
   };
 }

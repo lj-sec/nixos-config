@@ -1,17 +1,17 @@
 { ... }:
 {
   boot.kernelParams = [
-    "resume_offset=18883840"
+    "resume_offset=9856316"
   ];
 
-  boot.resumeDevice = "/dev/disk/by-uuid/6e431e35-0712-4d4a-8dd4-7fd6263797b4";
+  boot.resumeDevice = "/dev/disk/by-uuid/acb5baf1-35a9-4cb1-887c-7a6942af3dea";
 
-  powerManagement.enable = true; 
+  powerManagement.enable = true;
 
   swapDevices = [
     {
       device = "/var/lib/swap/swapfile";  # perms 600; created with chattr +C on the dir
-      size = 20 * 1024; # 20GB in MB
+      size = 80 * 1024; # 80GB in MB
     }
   ];
   
