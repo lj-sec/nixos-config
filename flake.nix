@@ -69,6 +69,7 @@
           ./hosts/t14g5-nixos
         ];
         specialArgs = {
+          hasFingerprint = true;
           host = "t14g5-nixos";
           inherit self inputs username;
         };
@@ -80,6 +81,7 @@
           ./hosts/omen30l-nixos 
         ];
         specialArgs = {
+          hasFingerprint = false;
           host = "omen30l-nixos";
           inherit self inputs username;
         };
