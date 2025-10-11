@@ -1,5 +1,9 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
+  imports = [
+    inputs.nixos-boot.nixosModules.default
+  ];
+
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     consoleLogLevel = 3;
@@ -18,9 +22,13 @@
       };
       timeout = 10;
     };
-    plymouth = {
-      enable = true;
-      theme = "bgrt";
-    };
+    plymouth.enable = true;
+  };
+
+  nixos-boot = {
+    enable = true;
+    theme  = "evil-nixos-centered";   # <- pick the theme here
+    # duration = 3.0;          # optional: force minimum seconds to show splash
+    bgColor = { red = 0; green = 0; blue = 0; };  # tweak background
   };
 }

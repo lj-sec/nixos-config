@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nix-colors.url = "github:Misterio77/nix-colors";
+    nixos-boot.url = "github:lj-sec/nixos-boot";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";
