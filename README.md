@@ -101,20 +101,99 @@ Testing on virtual machines and my personal desktop is in progress, with new hos
 ## Installation
 
 > [!CAUTION]  
-> This configuration is tailored to my hardware, relies heavily on fingerprint authentication, and sits on top of btrfs.  
-> You will need to adjust `hosts/<your-host>/hardware-configuration.nix` and other modules for your setup.
-> You will also need to create your own swapfile or adjust the path(s) in `modules/core/sleep.nix`
+> I am **not responsible** for any data loss, broken systems, or misconfigurations that may result from using this repository. This is still in an early stage.
+> Use at your own risk, and review configs before applying them to your machine.
 
-To attempt to apply this configuration on your own system:
+> [!WARNING]  
+> This configuration is tailored to my hardware, relies heavily on fingerprint authentication, and sits on top of btrfs.  
+> You will need to create a new host and copy over your `/etc/nixos/hardware-configuration.nix` to `hosts/<your-host>/hardware-configuration.nix` and adjust other modules for your setup.
+
+### 0. Install NixOS
+If you’re starting from scratch:
+
+Download the official ISO:
+→ [https://nixos.org/download](https://nixos.org/download)
+
+Follow the official installation guide:
+→ [https://nixos.org/manual/nixos/stable/#sec-installation](https://nixos.org/manual/nixos/stable/#sec-installation)
+
+Partition your drive with EFI + Btrfs, or your file system of choice
+
+When finished, your system’s hardware configuration will live at
+/etc/nixos/hardware-configuration.nix
+
+Once NixOS boots successfully, continue below to integrate this flake.
+
+### 1. Create a swap file for hibernation:
+
+```bash
+sudo mkdir -p /var/lib/swap
+sudo chattr +C /var/lib/swap                # Disable COW on btrfs
+sudo fallocate -l <size-of-RAM>G /var/lib/swap/swapfile
+sudo chmod 600 /var/lib/swap/swapfile
+sudo mkswap /var/lib/swap/swapfile
+```
+
+Then record the device UUID and offset (you’ll need these for your swap.nix):
+```bash
+# Find UUID of the partition containing your swapfile
+df --output=source /var/lib/swap/swapfile | tail -1
+
+# On btrfs, find the swapfile offset:
+sudo btrfs inspect-internal map-swapfile -r /var/lib/swap/swapfile
+```
+
+### 2. Set up host configuration:
+
+You have two choices:
+
+<details>
+<summary><b>Modifying an existing host</b></summary>
+
+Clone this repository and enter it:
 ```bash
 git clone https://github.com/lj-sec/nixos-config.git
 cd nixos-config
-sudo nixos-rebuild switch --flake .#t14g5-nixos
 ```
 
-> [!WARNING]  
-> I am **not responsible** for any data loss, broken systems, or misconfigurations that may result from using this repository. This is still in an early stage.
-> Use at your own risk, and review configs before applying them to your machine.
+Replace the contents of one of the present host's hardware-configuration.nix with your own:
+```bash
+sudo cp /etc/nixos/hardware-configuration.nix hosts/<your-host>
+```
+
+Open swap.nix in your editor and update:
+ - resume_offset= → your offset from earlier
+ - resumeDevice= → your swap partition’s UUID path
+ - size= → the size of your swapfile in GiB
+
+Ensure that in flake.nix the specialArgs `hasFingerprint` aligns with your preference on fingerprint authentication.
+
+And you're finished with this step!
+
+</details>
+
+<details>
+<summary><b>Creating your own host</b></summary>
+
+```bash
+git clone https://github.com/lj-sec/nixos-config.git
+cd nixos-config/hosts
+mkdir <your-host>
+sudo cp /etc/nixos/hardware-configuration.nix <your-host>
+touch <your-host>/default.nix
+touch <your-host>/swap.nix
+```
+Modify default.nix and swap.nix, mimicking the setup that is present in the other hosts present.
+Ensure that `default.nix` imports `./../../modules/core`, `./hardware-configuration.nix`, and `./swap.nix` at a minimum, as that ensures the rest of the flake is strapped in.
+
+</details>
+
+### 3. Apply the configuration
+
+Finally, from the root of the repository:
+```bash
+sudo nixos-rebuild switch --flake .#<your-host>
+```
 
 ---
 
