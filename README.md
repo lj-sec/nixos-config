@@ -164,15 +164,12 @@ Ensure that in flake.nix the specialArgs `hasFingerprint` aligns with your prefe
 
 And you're finished with this step!
 
----
-
 </details>
-
-<br>
 
 <details>
 <summary>Option B - Creating your own host</summary>
 <br>
+
 ```bash
 git clone https://github.com/lj-sec/nixos-config.git
 cd nixos-config/hosts
