@@ -91,10 +91,10 @@ sudo nixos-rebuild switch .#$(hostname)
 
 ## System Notes
 
-This setup was built entirely on a **Lenovo ThinkPad T14 Gen5 (AMD)**.  
-No testing has been carried out on other hardware, and some bugs are still being resolved, especially regarding Hyprlock + fprintd and this ThinkPad’s mic-mute (F4) LED staying on persistently.  
-
-Testing on virtual machines and my personal desktop is in progress, with new host modules planned for different needs.
+> [!NOTE]
+> This setup was originally built on and for a Lenovo ThinkPad T14 Gen5 (AMD).
+> Some bugs are still being resolved, especially regarding Hyprlock + fprintd and this ThinkPad’s mic-mute (F4) LED staying on persistently.
+> Testing on virtual machines and my personal desktop is in progress, with new host modules planned for different needs.
 
 ---
 
@@ -109,18 +109,12 @@ Testing on virtual machines and my personal desktop is in progress, with new hos
 > You will need to create a new host and copy over your `/etc/nixos/hardware-configuration.nix` to `hosts/<your-host>/hardware-configuration.nix` and adjust other modules for your setup.
 
 ### 0. Install NixOS
+
 If you’re starting from scratch:
-
-Download the official ISO:
-→ [https://nixos.org/download](https://nixos.org/download)
-
-Follow the official installation guide:
-→ [https://nixos.org/manual/nixos/stable/#sec-installation](https://nixos.org/manual/nixos/stable/#sec-installation)
-
-Partition your drive with EFI + Btrfs, or your file system of choice
-
-When finished, your system’s hardware configuration will live at
-/etc/nixos/hardware-configuration.nix
+ - Download the official ISO: → [https://nixos.org/download](https://nixos.org/download)
+ - Follow the official installation guide: → [https://nixos.org/manual/nixos/stable/#sec-installation](https://nixos.org/manual/nixos/stable/#sec-installation)
+ - Partition your drive with EFI + Btrfs, or your file system of choice
+ - When finished, your system’s hardware configuration will live at `/etc/nixos/hardware-configuration.nix`
 
 Once NixOS boots successfully, continue below to integrate this flake.
 
@@ -148,8 +142,8 @@ sudo btrfs inspect-internal map-swapfile -r /var/lib/swap/swapfile
 You have two choices:
 
 <details>
-<summary><b>Modifying an existing host</b></summary>
-
+<summary>Option A - Modifying an existing host</summary>
+<br>
 Clone this repository and enter it:
 ```bash
 git clone https://github.com/lj-sec/nixos-config.git
@@ -170,11 +164,15 @@ Ensure that in flake.nix the specialArgs `hasFingerprint` aligns with your prefe
 
 And you're finished with this step!
 
+---
+
 </details>
 
-<details>
-<summary><b>Creating your own host</b></summary>
+<br>
 
+<details>
+<summary>Option B - Creating your own host</summary>
+<br>
 ```bash
 git clone https://github.com/lj-sec/nixos-config.git
 cd nixos-config/hosts
@@ -185,6 +183,8 @@ touch <your-host>/swap.nix
 ```
 Modify default.nix and swap.nix, mimicking the setup that is present in the other hosts present.
 Ensure that `default.nix` imports `./../../modules/core`, `./hardware-configuration.nix`, and `./swap.nix` at a minimum, as that ensures the rest of the flake is strapped in.
+
+---
 
 </details>
 
