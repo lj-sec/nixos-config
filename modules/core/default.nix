@@ -13,8 +13,6 @@
     ./virtualization.nix
     # Steam/Proton settings
     ./steam.nix
-    # Sleep configuration
-    ./sleep.nix
     # All other services
     ./services
   ];

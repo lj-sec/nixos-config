@@ -31,6 +31,8 @@
     ./vscode
     # Password manager
     ./pass.nix
+    # Logout manager
+    ./wlogout.nix
     # All other packages with no config
     ./packages.nix
   ];

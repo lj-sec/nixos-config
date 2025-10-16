@@ -23,5 +23,7 @@
     ./security.nix
     # Power configuration and management
     ./power.nix
+    # Sleep daemon
+    ./sleep.nix
   ];
 }

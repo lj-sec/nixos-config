@@ -11,6 +11,8 @@
     wl-clipboard
     ## File Explorer
     yazi              # For the CLI
+    ## Calculator
+    rink
     ## Media
     gimp              # Image editor
     mpv               # Video player

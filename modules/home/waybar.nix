@@ -3,6 +3,7 @@ let
   p = config.colorScheme.palette; 
   custom = {
     font = "0xProto Nerd Font";
+    size_launcher = "20px";
     font_size    = "16px";
     font_weight  = "Bold";
     text_color   = "#${p.base05}";
@@ -26,7 +27,8 @@ in
 
     enable = true;
     style = with custom; ''
-
+      
+      /* Affecting the whole bar */
       * {
         font-family: "${font}";
         font-weight: ${font_weight};
@@ -34,11 +36,26 @@ in
         opacity: ${opacity};
         min-height: 0;
       }
-
       window#waybar {
         background: ${background_1};
       }
+      #custom-lyrics, #cpu, #memory, #network, #battery, #custom-mic, #pulseaudio, #custom-swaync, #custom-power {
+        background: ${background_0};
+        margin: 3px 2px;
+        padding: 4px 8px;
+        border-radius: 10px;
+      }
 
+      /* Modules from left to right: */
+
+      /* Snowflake launcher */
+      #custom-launcher {
+        font-size: ${size_launcher};
+        margin-left: 15px;
+        padding-right: 10px;
+      }
+
+      /* Hyprland workspaces */
       #workspaces {
         padding-left: 15px;
       }
@@ -55,63 +72,91 @@ in
         color: ${orange};
       }
 
-      #custom-launcher {
-        margin-left: 15px;
-        padding-right: 10px;
-      }
-
-      #custom-lyrics {
-        margin: 0 6px;
-        padding: 0 10px;
-      }
-      #custom-lyrics.paused {
-        opacity: 0.7;
-      }
-
-      /* Compact left-stripe pills */
-      #custom-lyrics, #cpu, #memory, #network, #battery, #pulseaudio, #custom-swaync {
-        background: ${background_0};
-        margin: 3px 2px;
-        padding: 4px 8px;
-        border-radius: 10px;
-      }
-
-      /* Thinner stripes to match the smaller padding */
-      #custom-lyrics { box-shadow: inset 3px 0 0 0 ${green},
-                                   inset -3px 0 0 0 ${green};  }
-      #cpu           { box-shadow: inset 3px 0 0 0 ${red};     }
-      #memory        { box-shadow: inset 3px 0 0 0 ${cyan};    }
-      #network       { box-shadow: inset 3px 0 0 0 ${magenta}; }
-      #battery       { box-shadow: inset 3px 0 0 0 ${yellow};  }
-      #pulseaudio    { box-shadow: inset 3px 0 0 0 ${blue};    }
-      #custom-swaync { box-shadow: inset 3px 0 0 0 ${orange};  }
-
-      /* Hover stays subtle */
-      #custom-lyrics:hover { box-shadow: inset 4px 0 0 0 ${green},
-                                         inset -4px 0 0 0 ${green};  }
-      #cpu:hover           { box-shadow: inset 4px 0 0 0 ${red};     }
-      #memory:hover        { box-shadow: inset 4px 0 0 0 ${cyan};    }
-      #network:hover       { box-shadow: inset 4px 0 0 0 ${magenta}; }
-      #battery:hover       { box-shadow: inset 4px 0 0 0 ${yellow};  }
-      #pulseaudio:hover    { box-shadow: inset 4px 0 0 0 ${blue};    }
-      #custom-swaync:hover { box-shadow: inset 4px 0 0 0 ${orange};  }
-
-      /* State tweaks */
-      #battery.charging                               { box-shadow: inset 3px 0 0 0 ${green}; }
-      #battery.charging:hover                         { box-shadow: inset 4px 0 0 0 ${green}; }
-      #battery.warning, #battery.critical             { box-shadow: inset 3px 0 0 0 ${red};   }
-      #battery.warning:hover, #battery.critical:hover { box-shadow: inset 4px 0 0 0 ${red};   }
-      #network.disconnected                           { box-shadow: inset 3px 0 0 0 ${red};   }
-      #network.disabled                               { box-shadow: inset 3px 0 0 0 ${border_color}; }
-
-      /* Tray + clock compact too */
-      #tray, #clock {
+      /* Clock and tray bars */
+      #clock, #tray {
         background: ${background_0};
         margin: 3px 2px;
         padding: 4px 8px;
         border-radius: 10px;
         border: 1px solid ${border_color};
       }
+
+      /* Spotify songs and lyrics */
+      #custom-lyrics {
+        margin: 0 6px;
+        padding: 0 10px;
+        box-shadow: inset 3px 0 0 0 ${green},
+                    inset -3px 0 0 0 ${green};
+      }
+      #custom-lyrics.paused {
+        opacity: 0.7;
+      }
+      #custom-lyrics:hover  {
+        box-shadow: inset 4px 0 0 0 ${green},
+                    inset -4px 0 0 0 ${green};
+      }
+
+      /* CPU Pill */
+      #cpu                  { box-shadow: inset 3px 0 0 0 ${red},
+                                          inset -3px 0 0 0 ${red}; }
+      #cpu:hover            { box-shadow: inset 4px 0 0 0 ${red},
+                                          inset -4px 0 0 0 ${red}; }
+
+      /* RAM Pill */
+      #memory               { box-shadow: inset 3px 0 0 0 ${cyan},
+                                          inset -3px 0 0 0 ${cyan}; }
+      #memory:hover         { box-shadow: inset 4px 0 0 0 ${cyan},
+                                          inset -4px 0 0 0 ${cyan}; }
+      
+      /* Networking pill with multiple states */
+      #network              { box-shadow: inset 3px 0 0 0 ${magenta},
+                                          inset -3px 0 0 0 ${magenta}; }
+      #network:hover        { box-shadow: inset 4px 0 0 0 ${magenta},  
+                                          inset -4px 0 0 0 ${magenta}; }
+      #network.disconnected       { box-shadow: inset 3px 0 0 0 ${red},
+                                                inset -3px 0 0 0 ${red}; }
+      #network.disconnected:hover { box-shadow: inset 4px 0 0 0 ${red},    
+                                                inset -4px 0 0 0 ${red}; }
+      #network.disabled           { box-shadow: inset 3px 0 0 0 ${border_color},
+                                                inset -3px 0 0 0 ${border_color}; }
+      #network.disabled:hover     { box-shadow: inset 4px 0 0 0 ${border_color},
+                                                inset -4px 0 0 0 ${border_color}; }
+      
+      /* Battery pill with multiple states */
+      #battery              { box-shadow: inset 3px 0 0 0 ${yellow},
+                                          inset -3px 0 0 0 ${yellow}; }
+      #battery:hover        { box-shadow: inset 4px 0 0 0 ${yellow},
+                                          inset -4px 0 0 0 ${yellow}; }
+      #battery.full, #battery.charging                { box-shadow: inset 3px 0 0 0 ${green},
+                                                                    inset -3px 0 0 0 ${green}; }
+      #battery.full:hover, #battery.charging:hover    { box-shadow: inset 4px 0 0 0 ${green},
+                                                                    inset -4px 0 0 0 ${green}; }
+      #battery.warning, #battery.critical             { box-shadow: inset 3px 0 0 0 ${red},
+                                                                    inset -3px 0 0 0 ${red};   }
+      #battery.warning:hover, #battery.critical:hover { box-shadow: inset 4px 0 0 0 ${red},
+                                                                    inset -4px 0 0 0 ${red};   }
+      
+      /* Custom mic module to ensure state updates properly */
+      #custom-mic {
+        padding-left: 8px;
+        box-shadow: inset 3px 0 0 0 ${blue};
+      }
+
+      /* Audio pill */
+      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue};   }
+      #pulseaudio:hover     { box-shadow: inset -4px 0 0 0 ${blue};   }
+      
+      /* Notification launcher */
+      #custom-swaync        { box-shadow: inset 3px 0 0 0 ${orange};  }
+      #custom-swaync:hover  { box-shadow: inset 4px 0 0 0 ${orange};  }
+      
+      /* Wlogout screen launcher */
+      #custom-power {
+        padding-left: 3px;
+        padding-right: 10px;
+        box-shadow: inset -3px 0 0 0 ${orange};
+      }
+      #custom-power:hover   { box-shadow: inset -4px 0 0 0 ${orange}; }
     '';
 
     settings.mainBar = with custom; {
@@ -133,10 +178,12 @@ in
       modules-right = [
         "cpu"
         "memory"
+        "custom/mic"
         "pulseaudio"
         "network"
         "battery"
         "custom/swaync"
+        "custom/power"
       ];
       clock = {
         format = " {:%H:%M}";
@@ -200,12 +247,31 @@ in
         icon-size = 15;
         spacing = 10;
       };
-      pulseaudio = {
-        format = "  {volume}%";
-        format-muted = "<span foreground='${blue}'> </span> {volume}%";
+      "pulseaudio" = {
+        format = "<span foreground='${blue}'> </span>{volume}%";
+        format-muted = "<span foreground='${blue}'> </span>{volume}%";
         scroll-step = 2;
-        on-click = "pamixer -t";
+        on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
+      };
+      "custom/mic" = {
+        format = "{}";
+        tooltip = true;
+        interval = 1;
+        exec = ''
+          bash -c '
+            s=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null || true)
+            if echo "$s" | grep -q MUTED; then
+              echo "<span foreground=\"${blue}\"></span>"
+              echo "Mic: muted" >&2
+            else
+              echo "<span foreground=\"${blue}\"></span>"
+              echo "Mic: live" >&2
+            fi
+          '
+        '';
+        on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle";
+        return-type = "text";
       };
       battery = {
         format =          "<span foreground='${yellow}'>󰁹</span> {capacity}%";
@@ -233,7 +299,7 @@ in
         on-click = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
       };
       "custom/launcher" = {
-        format = "";
+        format = "";
         on-click = "rofi -show drun || pkill rofi";
         tooltip = true;
         tooltip-format = "Run Rofi";
@@ -253,6 +319,12 @@ in
         exec-if = "which waybar-lyric";
         exec = "waybar-lyric --quiet -m150";
         on-click = "waybar-lyric --toggle";
+      };
+      "custom/power" = {
+        format = "";
+        tooltip = true;
+        tooltip-format = "Power menu";
+        on-click = "wlogout -b 3 -n -P 0 -T 250 -B 250 -L 500 -R 500";
       };
     }; 
   };

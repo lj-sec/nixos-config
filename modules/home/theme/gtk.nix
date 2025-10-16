@@ -12,9 +12,9 @@ in
 
   home.pointerCursor = {
     gtk.enable = true;
-    package = pkgs.bibata-cursors;
-    name = "Bibata-Modern-Ice";
-    size = 16;
+    package = pkgs.afterglow-cursors-recolored;
+    name = "Afterglow-Recolored-Dracula-Red";
+    size = 12;
   };
 
   gtk = {
