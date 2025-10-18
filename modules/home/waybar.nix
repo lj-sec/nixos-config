@@ -141,14 +141,15 @@ in
         padding-left: 8px;
         box-shadow: inset 3px 0 0 0 ${blue};
       }
+      #custom-mic:hover     { box-shadow: inset 4px 0 0 0 ${blue};   }
 
       /* Audio pill */
-      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue};   }
-      #pulseaudio:hover     { box-shadow: inset -4px 0 0 0 ${blue};   }
+      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue};  }
+      #pulseaudio:hover     { box-shadow: inset -4px 0 0 0 ${blue};  }
       
       /* Notification launcher */
-      #custom-swaync        { box-shadow: inset 3px 0 0 0 ${orange};  }
-      #custom-swaync:hover  { box-shadow: inset 4px 0 0 0 ${orange};  }
+      #custom-swaync        { box-shadow: inset 3px 0 0 0 ${orange}; }
+      #custom-swaync:hover  { box-shadow: inset 4px 0 0 0 ${orange}; }
       
       /* Wlogout screen launcher */
       #custom-power {
@@ -255,34 +256,47 @@ in
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
       "custom/mic" = {
-        format = "{}";
-        tooltip = true;
+        return-type = "json";
         interval = 1;
+        tooltip = true;
         exec = ''
           bash -c '
             s=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null || true)
-            if echo "$s" | grep -q MUTED; then
-              echo "<span foreground=\"${blue}\"></span>"
-              echo "Mic: muted" >&2
+
+            # Parse volume and mute
+            vol=$(printf "%s" "$s" | awk "{for(i=1;i<=NF;i++) if(\$i ~ /^[0-9.]+$/) v=\$i} END {if(v==\"\" ) v=0; printf(\"%.0f\", v*100)}")
+            if printf "%s" "$s" | grep -q MUTED; then
+              icon="<span foreground=\"${custom.blue}\"></span>"
+              status="muted"
             else
-              echo "<span foreground=\"${blue}\"></span>"
-              echo "Mic: live" >&2
+              icon="<span foreground=\"${custom.blue}\"></span>"
+              status="live"
             fi
+
+            # Friendly mic name (fallback to node.name)
+            mic_name=$(wpctl inspect @DEFAULT_SOURCE@ 2>/dev/null | sed -n "s/.*\"node.description\" = \"\\(.*\\)\".*/\\1/p")
+            [ -z "$mic_name" ] && mic_name=$(wpctl inspect @DEFAULT_SOURCE@ 2>/dev/null | sed -n "s/.*\"node.name\" = \"\\(.*\\)\".*/\\1/p")
+
+            text="$icon ${vol}%"
+            tooltip="🎙 $mic_name\nStatus: $status\nVolume: ${vol}%"
+
+            printf "{\\"text\\": \\"%s\\", \\"tooltip\\": \\"%s\\"}\n" "$text" "$tooltip"
           '
         '';
+        format = "{}";
         on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle";
-        return-type = "text";
+        on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
       battery = {
-        format =          "<span foreground='${yellow}'>󰁹</span> {capacity}%";
-        format-charging = "<span foreground='${green}'>󰂄</span> {capacity}%";
-        format-full =     "<span foreground='${green}'>󰂅</span> {capacity}%";
-        format-almost =   "<span foreground='${yellow}'>󰂂</span> {capacity}%";
+        format =              "<span foreground='${yellow}'>󰁹</span> {capacity}%";
+        format-charging =     "<span foreground='${green}'>󰂄</span> {capacity}%";
+        format-full =         "<span foreground='${green}'>󰂅</span> {capacity}%";
+        format-almost =       "<span foreground='${yellow}'>󰂂</span> {capacity}%";
         format-threequarter = "<span foreground='${yellow}'>󰂀</span> {capacity}%";
-        format-half =     "<span foreground='${yellow}'>󰁾</span> {capacity}%";
-        format-quarter =  "<span foreground='${yellow}'>󰁻</span> {capacity}%";
-        format-warning =  "<span foreground='${red}'>󰂎 </span>{capacity}%";
-        format-critical = "<span foreground='${red}'>󰂎!</span>{capacity}%";
+        format-half =         "<span foreground='${yellow}'>󰁾</span> {capacity}%";
+        format-quarter =      "<span foreground='${yellow}'>󰁻</span> {capacity}%";
+        format-warning =      "<span foreground='${red}'>󰂎 </span>{capacity}%";
+        format-critical =     "<span foreground='${red}'>󰂎!</span>{capacity}%";
         interval = 5;
         states = {
           full = 100;
