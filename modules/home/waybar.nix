@@ -139,12 +139,13 @@ in
       /* Custom mic module to ensure state updates properly */
       #custom-mic {
         padding-left: 8px;
+        margin-right: 0px;
         box-shadow: inset 3px 0 0 0 ${blue};
       }
       #custom-mic:hover     { box-shadow: inset 4px 0 0 0 ${blue};   }
 
       /* Audio pill */
-      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue};  }
+      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue}; margin-left: 0px; }
       #pulseaudio:hover     { box-shadow: inset -4px 0 0 0 ${blue};  }
       
       /* Notification launcher */
@@ -259,33 +260,39 @@ in
         return-type = "json";
         interval = 1;
         tooltip = true;
+        markup = true;
+        signal = 5;
         exec = ''
-          bash -c '
-            s=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null || true)
+          bash <<'BASH'
+s=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null || true)
 
-            # Parse volume and mute
-            vol=$(printf "%s" "$s" | awk "{for(i=1;i<=NF;i++) if(\$i ~ /^[0-9.]+$/) v=\$i} END {if(v==\"\" ) v=0; printf(\"%.0f\", v*100)}")
-            if printf "%s" "$s" | grep -q MUTED; then
-              icon="<span foreground=\"${custom.blue}\"></span>"
-              status="muted"
-            else
-              icon="<span foreground=\"${custom.blue}\"></span>"
-              status="live"
-            fi
+if printf "%s" "$s" | grep -q MUTED; then
+  icon=""; status="muted"
+else
+  icon=""; status="live"
+fi
 
-            # Friendly mic name (fallback to node.name)
-            mic_name=$(wpctl inspect @DEFAULT_SOURCE@ 2>/dev/null | sed -n "s/.*\"node.description\" = \"\\(.*\\)\".*/\\1/p")
-            [ -z "$mic_name" ] && mic_name=$(wpctl inspect @DEFAULT_SOURCE@ 2>/dev/null | sed -n "s/.*\"node.name\" = \"\\(.*\\)\".*/\\1/p")
+num=$(printf "%s" "$s" | grep -Eo '[0-9]+\.[0-9]+' | head -n1)
+if [ -n "$num" ]; then
+  vol=$(awk -v n="$num" 'BEGIN{printf("%d", n*100 + 0.5)}')
+else
+  vol="--"
+fi
 
-            text="$icon ${vol}%"
-            tooltip="🎙 $mic_name\nStatus: $status\nVolume: ${vol}%"
+# normal span like your other modules
+icon_markup="<span foreground='${custom.blue}'>$icon</span>"
 
-            printf "{\\"text\\": \\"%s\\", \\"tooltip\\": \\"%s\\"}\n" "$text" "$tooltip"
-          '
+# careful: wrap JSON in single quotes, inner values in double quotes
+printf '{"text":"%s %s%%","tooltip":"Mic %s (%s)","class":"%s"}\n' \
+  "$icon_markup" "$vol" "$status" "$vol%" "$status"
+BASH
         '';
-        format = "{}";
-        on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle";
+        format = "{text}";
+        on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle; killall -RTMIN+5 waybar";
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
+        on-scroll-up = "wpctl set-volume @DEFAULT_SOURCE@ 2%+ --limit 1.0; killall -RTMIN+5 waybar";
+        on-scroll-down = "wpctl set-volume @DEFAULT_SOURCE@ 2%- --limit 1.0; killall -RTMIN+5 waybar";
+        on-click-middle = "wpctl set-volume @DEFAULT_SOURCE@ 100% --limit 1.0; killall -RTMIN+5 waybar";
       };
       battery = {
         format =              "<span foreground='${yellow}'>󰁹</span> {capacity}%";
@@ -322,6 +329,8 @@ in
         format = "";
         on-click = "sh -c 'sleep 0.1; swaync-client -t -sw'";
         on-click-right = "swaync-client -C";
+        tooltip = true;
+        tooltip-format = "SwayNC";
       };
       "custom/lyrics" = {
         return-type = "json";

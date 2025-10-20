@@ -28,6 +28,8 @@
     # CLI Tools
     #
     ## Utils
+    inetutils
+    filezilla
     wget
     eza               # better ls
     killall
