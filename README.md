@@ -242,7 +242,7 @@ sudo nixos-rebuild switch --flake .#<your-host>
 
 ## Shoutout
 
-- [Frost-Phoenix](https://github.com/Frost-Phoenix/) for their [nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main)
+- [Frost-Phoenix](https://github.com/Frost-Phoenix/) for their [nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main) and their [installer](https://github.com/Frost-Phoenix/nixos-config/blob/main/install.sh) for inspiration
 - [Misterio77](https://github.com/Misterio77) for [nix-colors](https://github.com/Misterio77/nix-colors) and [nix-starter-configs](https://github.com/Misterio77/nix-starter-configs)
 - [Melkor333](https://github.com/Melkor333) for [nixos-boot](https://github.com/Melkor333/nixos-boot) to which I forked at [lj-sec/nixos-boot](https://github.com/lj-sec/nixos-boot)
 - [tony](https://www.youtube.com/@tony-btw) and [Vimjoyer](https://www.youtube.com/@vimjoyer) on YouTube for NixOS tutorial content

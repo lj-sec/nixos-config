@@ -43,7 +43,6 @@
 
     pkgs = import nixpkgs {
       inherit system;
-      # config.allowUnfree = true;
     };
 
     lib = nixpkgs.lib;
@@ -83,6 +82,18 @@
         specialArgs = {
           hasFingerprint = false;
           host = "omen30l-nixos";
+          inherit self inputs username;
+        };
+      };
+      precision3640-nixos = lib.nixosSystem {
+        inherit system;
+        modules = [
+         { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
+         ./hosts/precision3640-nixos
+        ];
+        specialArgs = {
+          hasFingerprint = false;
+          host = "precision3640-nixos";
           inherit self inputs username;
         };
       };
