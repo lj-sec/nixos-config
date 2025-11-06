@@ -39,11 +39,11 @@ in
       window#waybar {
         background: ${background_1};
       }
-      #custom-lyrics, #cpu, #memory, #network, #battery, #custom-mic, #pulseaudio, #custom-swaync, #custom-power {
+      #workspaces, #custom-lyrics, #cpu, #memory, #network, #battery, #custom-mic, #pulseaudio, #custom-swaync, #custom-power {
         background: ${background_0};
-        margin: 3px 2px;
-        padding: 4px 8px;
-        border-radius: 10px;
+        margin: 2px 2px;
+        padding: 4px 4px;
+        border-radius: 8px;
       }
 
       /* Modules from left to right: */
@@ -58,12 +58,20 @@ in
       /* Hyprland workspaces */
       #workspaces {
         padding-left: 15px;
+        box-shadow: inset 3px 0 0 0 ${red},
+                    inset -3px 0 0 0 ${red};
+      }
+      #workspaces:hover {
+        box-shadow: inset 4px 0 0 0 ${red},
+                    inset -4px 0 0 0 ${red};
       }
       #workspaces button {
         color: ${yellow};
         padding-left: 5px;
         padding-right: 5px;
         margin-right: 10px;
+        margin-bottom: -3px;
+        margin-top: -3px;
       }
       #workspaces button.empty {
         color: ${text_color};
@@ -95,6 +103,19 @@ in
         box-shadow: inset 4px 0 0 0 ${green},
                     inset -4px 0 0 0 ${green};
       }
+
+      /* Cava
+      #custom-cava {
+        font-family: "0xProto Nerd Font", monospace;
+        font-size: 12px;
+        padding: 2px 6px;
+        min-width: 40px;
+
+        color: ${green};
+        background: ${background_0};
+        border-radius: 6px;
+        border: 1px solid ${border_color};
+      } */
 
       /* CPU Pill */
       #cpu                  { box-shadow: inset 3px 0 0 0 ${red},
@@ -178,6 +199,7 @@ in
         "custom/lyrics"
       ];
       modules-right = [
+        # "custom/cava"
         "cpu"
         "memory"
         "custom/mic"
@@ -319,6 +341,11 @@ BASH
         tooltip-format = "{time}";
         on-click = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
       };
+      # "custom/cava" = {
+      #   exec = "sh -c '${config.home.homeDirectory}/.config/waybar/scripts/cava-waybar.sh'";
+      #   signal = 6;
+      #   return-type = "json";
+      # };
       "custom/launcher" = {
         format = "";
         on-click = "rofi -show drun || pkill rofi";

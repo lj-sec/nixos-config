@@ -3,9 +3,11 @@
 {
   programs.git = {
     enable = true;
-    userName = "lj-sec";
-    userEmail = "126737129+lj-sec@users.noreply.github.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "lj-sec";
+        email = "126737129+lj-sec@users.noreply.github.com";
+      };
       init.defaultBranch = "main";
       pull.rebase = false;
       credential.helper = "!gh auth git-credential";

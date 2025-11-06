@@ -48,23 +48,10 @@
     lib = nixpkgs.lib;
 
   in {
-    overlays = {
-      waybar-lyric-fix = final: prev: {
-        waybar-lyric = prev.waybar-lyric.overrideAttrs (_: {
-          src = prev.fetchFromGitHub {
-            owner = "Nadim147c";
-            repo  = "waybar-lyric";
-            rev   = "v0.11.0";
-            hash  = "sha256-4qQ2b9xLcuqiN1U2AYDXEoaqWvy/o+MgTF3Zh0YPLCo=";
-          };
-        });
-      };
-    };
     nixosConfigurations = {
       t14g5-nixos = lib.nixosSystem {
         inherit system;
-        modules = [ 
-          { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
+        modules = [
           ./hosts/t14g5-nixos
         ];
         specialArgs = {
@@ -76,7 +63,6 @@
       omen30l-nixos = lib.nixosSystem {
         inherit system;
         modules = [
-          { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
           ./hosts/omen30l-nixos 
         ];
         specialArgs = {
@@ -88,7 +74,6 @@
       precision3640-nixos = lib.nixosSystem {
         inherit system;
         modules = [
-         { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
          ./hosts/precision3640-nixos
         ];
         specialArgs = {

@@ -28,8 +28,11 @@
     # CLI Tools
     #
     ## Utils
+    coreutils
     inetutils
     filezilla
+    gnused
+    gawk
     wget
     eza               # better ls
     killall
@@ -53,12 +56,14 @@
     wireguard-tools
     proxychains-ng
     ## Goofy
+    cava
     sl                # choo-choo
     pay-respects      # f
     asciiquarium-transparent
     cowsay
     pipes
     lolcat
+    waybar-lyric
 
     # GUI Tools
     #

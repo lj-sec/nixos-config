@@ -1,6 +1,8 @@
 { ... }:
 {
   imports = [
+    # Audio display
+    # ./cava.nix
     # Wayland Compositor
     ./hyprland
     # Custom taskbar

@@ -2,8 +2,8 @@
 {
   home.packages = with pkgs; [
     swww
-    inputs.hypr-contrib.packages.${pkgs.system}.grimblast
-    inputs.hyprpicker.packages.${pkgs.system}.hyprpicker
+    inputs.hypr-contrib.packages.${pkgs.stdenv.hostPlatform.system}.grimblast
+    inputs.hyprpicker.packages.${pkgs.stdenv.hostPlatform.system}.hyprpicker
     wf-recorder
     glib
     wayland
