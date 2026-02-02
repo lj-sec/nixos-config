@@ -19,19 +19,16 @@
   </a>
 </p>
 
-# LJ's NixOS Flake
+# LJ's Nix Flake
 
 </div>
 
-My fully declarative NixOS configuration, managed with flakes and home-manager.
-It’s built for a clean, reliable, and reproducible single-user environment optimized for productivity and schoolwork with support for Steam/Proton, virtualization, and lightweight security/pentesting tooling. A Kali Linux distrobox container will be created at login if not present, and install the tools listed in the `kali/apt-packages.txt` file.
-The configuration also enables `allowUnfree = true;` to support proprietary applications like Brave, Spotify, and Steam.
-Packages and configurations will evolve as my workflow changes.
+This repository contains my personal NixOS configuration, managed declaratively with flakes and home-manager.  
+The goal of this repository is to build a usable, user-friendly NixOS setup that stays out of the way and lets me focus on being productive.
 
 ---
 
 ## Screenshots
-A few visuals of the desktop and utilities included in this setup:
 
 - **Desktop**  
   ![Desktop1](./.github/screenshots/screenshot1.png)
@@ -51,11 +48,9 @@ A few visuals of the desktop and utilities included in this setup:
 nixos-config/
 ├── flake.nix
 ├── flake.lock
-├── kali/
 ├── hosts/
 │   ├── t14g5-nixos/
-│   ├── omen30l-nixos/
-│   └── etc...
+│   └── omen30l-nixos/
 ├── modules/
 │   ├── core/
 │   │   └── services/
@@ -70,7 +65,6 @@ nixos-config/
 ## Features
 
 - **Hyprland** as the Wayland compositor, with 10 workspaces
-- **Hyprlock** as the one and only screen locking utility and sign-in screen for a single user
 - **Rofi** as the fast, lightweight application launcher
 - **Waybar** as the status bar with functional and clickable modules
 - **SwayNC** as the notification daemon and center
@@ -80,7 +74,7 @@ nixos-config/
 - **Security tools** with packages for hardening, recon, and penetration testing
 - **Gaming support** via Steam and GE-Proton
 - **Virtualization support** including libvirt, virt-manager, and SPICE
-- Includes a wide selection of daily-use applications for a stable, everyday workflow.
+- Plus a wide selection of common, daily-use applications for a reliable, everyday computing experience
 
 ---
 
@@ -95,12 +89,12 @@ rebuild [ACTION] [FLAKE] [HOST]
 ```
 
 ### Output:
-```
+```bash
 sudo nixos-rebuild [ACTION] [FLAKE]#[HOST]
 ```
 
 ### Default:
-```
+```bash
 sudo nixos-rebuild switch .#$(hostname)
 ```
 
@@ -110,13 +104,13 @@ sudo nixos-rebuild switch .#$(hostname)
 
 ## System Notes
 
-This setup was primarily built and tested on a Lenovo ThinkPad T14 Gen5 (AMD, 21MC).  
-Some quirks have been noted:
+This setup was built mostly on and for a Lenovo ThinkPad T14 Gen5 (AMD) 21MC, and some bugs are still being resolved.
+Some quirks of note that have been run into:
  - This keyboard's micmute button and LED have been impossible to configure, as it is not throwing XF86AudioMicMute when pressed as it should. In this repo I have created a script and a service that hooks into wireplumber and pipewire to ensure the accuracy of the LED via writing directly to `/sys/class/leds/platform::micmute/brightness` and the waybar custom-mic module. For now, I have also bound SUPER + M to toggle the microphone.
  - The Steam games that have been tested on the ThinkPad (i.e. Noita, Balatro) have only launched when forced to use the GE-Proton Compatibility tool. When using GE-Proton, no issues.
- - ~~The custom waybar-lyric module will use high CPU when Spotify has not been launched at least once in the environment. Workaround is Spotify is launched in workspace 5 on boot. This module works cleanly unless the Spotify DJ is talking, to which it crashes.~~ Patched!
+ - The custom waybar-lyric module will use high CPU when Spotify has not been at least launched once in the environment. Workaround is Spotify is launched in workspace 5 on boot. This module works cleanly unless the Spotify DJ is talking, to which it crashes.
 
-The other system currently being tested is an HP Omen 30L (i9-10850K, RTX 3070), which successfully built on the second attempt after configuring the swapfile correctly, despite the hardware differences. Updates to come.
+The other system currently being tested is an HP Omen 30L (i9-10850K, RTX 3070), which notably built second try after properly configuring the swapfile despite such different hardware. Updates to come.
 
 ---
 
@@ -134,7 +128,7 @@ The other system currently being tested is an HP Omen 30L (i9-10850K, RTX 3070),
 
 ### 0. Requirements
 
-- NixOS 25.05 or newer
+- NixOS 25.11 or newer
 - Home Manager module support
 - UEFI system with Btrfs (recommended)
 - Internet connection for flake inputs
@@ -182,13 +176,13 @@ cd nixos-config
 
 Replace the contents of one of the present host's hardware-configuration.nix with your own:
 ```bash
-sudo cp /etc/nixos/hardware-configuration.nix hosts/<your-host>/hardware-configuration.nix
+sudo cp /etc/nixos/hardware-configuration.nix hosts/<your-host>
 ```
 
-Open `hosts/<your-host>/swap.nix` in your editor of choice and update:
- - `resume_offset=` → your offset from earlier
- - `resumeDevice=` → your swap partition’s UUID path
- - `size=` → the size of your swapfile in GiB
+Open swap.nix in your editor and update:
+ - resume_offset= → your offset from earlier
+ - resumeDevice= → your swap partition’s UUID path
+ - size= → the size of your swapfile in GiB
 
 Ensure that in flake.nix the specialArgs `hasFingerprint` aligns with your preference on fingerprint authentication.
 
@@ -208,26 +202,8 @@ sudo cp /etc/nixos/hardware-configuration.nix <your-host>
 touch <your-host>/default.nix
 touch <your-host>/swap.nix
 ```
-Modify default.nix and swap.nix with your editor of choice, mimicking the setup that is present in the other hosts present.
-Ensure that `<your-host>/default.nix` imports `./../../modules/core`, `./hardware-configuration.nix`, and `./swap.nix` at a minimum, as that ensures the rest of the flake is strapped in.
-
-Once that is completed, navigate back to the root of the repository (pwd should be nixos-config). Find the flake.nix file and modify it with your editor of choice to include your new host underneath the present hosts as such:
-```nix
-<your-host> = lib.nixosSystem {
-  inherit system;
-  modules = [
-    { nixpkgs.overlays = [ self.overlays.waybar-lyric-fix ]; }
-    ./hosts/<your-host> 
-  ];
-  specialArgs = {
-    hasFingerprint = <true/false>;
-    host = "<your-host>";
-    inherit self inputs username;
-  };
-};
-```
-
-And you're finished with this setup!
+Modify default.nix and swap.nix, mimicking the setup that is present in the other hosts present.
+Ensure that `default.nix` imports `./../../modules/core`, `./hardware-configuration.nix`, and `./swap.nix` at a minimum, as that ensures the rest of the flake is strapped in.
 
 ---
 
@@ -236,7 +212,7 @@ And you're finished with this setup!
 ### 3. Apply the configuration
 
 Finally, from the root of the repository:
-```
+```bash
 sudo nixos-rebuild switch --flake .#<your-host>
 ```
 
@@ -244,10 +220,7 @@ sudo nixos-rebuild switch --flake .#<your-host>
 
 ## Shoutout
 
-- [Frost-Phoenix](https://github.com/Frost-Phoenix/) for their [nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main) and their [installer](https://github.com/Frost-Phoenix/nixos-config/blob/main/install.sh) for inspiration
-- [Misterio77](https://github.com/Misterio77) for [nix-colors](https://github.com/Misterio77/nix-colors) and [nix-starter-configs](https://github.com/Misterio77/nix-starter-configs)
-- [Melkor333](https://github.com/Melkor333) for [nixos-boot](https://github.com/Melkor333/nixos-boot) to which I forked at [lj-sec/nixos-boot](https://github.com/lj-sec/nixos-boot)
-- [tony](https://www.youtube.com/@tony-btw) and [Vimjoyer](https://www.youtube.com/@vimjoyer) on YouTube for NixOS tutorial content
+A lot of my inspiration (and some configs) came from [Frost-Phoenix’s nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main).
 
 ---
 
@@ -256,4 +229,4 @@ sudo nixos-rebuild switch --flake .#<your-host>
 The wallpapers in the `./wallpapers/` directory were sourced from [WallpaperAccess](https://wallpaperaccess.com/).  
 I do not claim ownership of these images. All rights belong to their respective creators.
 
-If you are the copyright holder of one of these wallpapers and would like it removed or credited differently, please [contact me](https://lj-sec.github.io).s
+If you are the copyright holder of one of these wallpapers and would like it removed or credited differently, please contact me.
