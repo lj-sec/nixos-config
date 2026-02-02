@@ -88,7 +88,9 @@ in
         echo $line2
       end
       
-      pay-respects fish --alias | source
+      if type -q pay-respects 
+        pay-respects fish --alias | source
+      end
     '';
   };
 }

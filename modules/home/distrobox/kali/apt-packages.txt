@@ -1,0 +1,26 @@
+# core
+ca-certificates
+zsh
+tmux
+python3-pip
+
+# recon/web
+sqlmap
+wpscan
+nikto
+
+# AD/windows
+bloodhound
+evil-winrm
+responder
+enum4linux-ng
+smbmap
+ldap-utils
+
+# frameworks
+metasploit-framework
+exploitdb
+set
+
+# Metapackages
+kali-tools-web

@@ -25,5 +25,7 @@
     ./power.nix
     # Sleep daemon
     ./sleep.nix
+    # Sync certain folders
+    ./syncthing.nix
   ];
 }

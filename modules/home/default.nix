@@ -5,6 +5,8 @@
     # ./cava.nix
     # Wayland Compositor
     ./hyprland
+    # Containers
+    ./distrobox
     # Custom taskbar
     ./waybar.nix
     # Notifications

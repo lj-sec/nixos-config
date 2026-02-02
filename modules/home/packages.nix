@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   # Packages listed here have no configuration of their own as of now
   home.packages = with pkgs; [
@@ -9,6 +9,8 @@
     wl-clip-persist
     cliphist
     wl-clipboard
+    ## Browser
+    firefox           # Backup for Brave weirdness
     ## File Explorer
     yazi              # For the CLI
     ## Calculator
@@ -31,6 +33,7 @@
     coreutils
     inetutils
     filezilla
+    ripgrep
     gnused
     gawk
     wget
@@ -53,8 +56,10 @@
     gnutar
     p7zip
     ## Network
+    openvpn
     wireguard-tools
     proxychains-ng
+    inputs.globalprotect-openconnect.packages.${pkgs.stdenv.hostPlatform.system}.default
     ## Goofy
     cava
     sl                # choo-choo
@@ -64,6 +69,7 @@
     pipes
     lolcat
     waybar-lyric
+    prismlauncher
 
     # GUI Tools
     #
@@ -88,39 +94,40 @@
     #
     ## Recon
     nmap
-    dnsrecon
+    # dnsrecon
     macchanger
     ## Web
-    burpsuite
-    zap
-    sqlmap
-    wpscan
-    dirbuster
+    # burpsuite
+    # zap
+    # sqlmap
+    # wpscan
+    # dirbuster
     ## Creds
-    hydra
     hashcat
     seclists
     ## Win/AD
-    netexec
-    evil-winrm
-    mimikatz
-    responder
-    powersploit
-    enum4linux-ng
-    smbclient-ng
-    smbmap
-    openldap
-    kerbrute
+    # netexec
+    # evil-winrm
+    # mimikatz
+    # responder
+    # powersploit
+    # enum4linux-ng
+    # smbclient-ng
+    # smbmap
+    # openldap
+    # kerbrute
     ## Net
     wireshark
     tcpdump
     ## Wireless
     aircrack-ng
     ## Framework
-    metasploit
-    exploitdb
+    # metasploit
+    # exploitdb
+    ## Social Engineering
+    # social-engineer-toolkit
     ## Post
-    dbd
+    # dbd
     netcat
   ];
 }

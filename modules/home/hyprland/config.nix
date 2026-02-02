@@ -24,6 +24,8 @@ in
   wayland.windowManager.hyprland = {
     settings = lib.mkMerge [
       {
+        "$mainMod" = "SUPER";
+
         exec-once = [
           "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
           "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
@@ -40,7 +42,6 @@ in
         };
 
         general = {
-          "$mainMod" = "SUPER";
           layout = "dwindle";
           gaps_in = 3;
           gaps_out = 3;
@@ -48,7 +49,7 @@ in
           "col.active_border" = "rgb(${p.base08}) rgb(${p.base00}) 45deg";
           "col.inactive_border" = "0x00000000";
           # border_part_of_window = false;
-          no_border_on_floating = false;
+          # no_border_on_floating = false;
         };
 
         misc = {
@@ -58,7 +59,7 @@ in
           animate_manual_resizes = true;
           enable_swallow = true;
           focus_on_activate = false; # may be weird
-          new_window_takes_over_fullscreen = 2;
+          # new_window_takes_over_fullscreen = 2;
           middle_click_paste = false;
         };
 
@@ -148,8 +149,8 @@ in
 
           # Screenshots
           "$mainMod, S, exec, grimblast --notify --freeze copy area"
-          "$mainMod SHIFT, S, exec, grimblast --notify --freeze save area ${ssDir}/screenshot"
-          "$mainMod, A, exec, grimblast --notify --freeze save area - | swappy -f -"
+          "$mainMod SHIFT, S, exec, bash -lc 'grimblast --notify --freeze save area \"${ssDir}/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png\"'"
+          "$mainMod, A, exec, bash -lc 'grimblast --notify --freeze save area - | swappy -f - -o \"${ssDir}/swappy-$(date +%Y-%m-%d_%H-%M-%S).png\"'"
 
           # Focus
           "$mainMod, h, movefocus, l"
@@ -202,13 +203,8 @@ in
         ];
 
         windowrule = [
-          "float,title:^(Picture-in-Picture)$"
-          "pin,title:^(Picture-in-Picture)$"
-        ];
-
-        windowrulev2 = [
-          "float, class:^(?i)sticky.py$"
-          "size 200 200, class:^(?i)sticky.py$"
+          "match:title ^(Picture-in-Picture)$, float 1, pin 1"
+          "match:class ^(sticky\\.py)$, float 1, size 200 200"
         ];
         
         monitor = [ "eDP-1,preferred,auto,1" ];

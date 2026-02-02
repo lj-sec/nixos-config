@@ -22,4 +22,6 @@
     extraGroups = [ "wheel" "networkmanager" "wireshark" ];
   };
   nix.settings.allowed-users = [ "${username}" ];
+
+  users.groups.utmp = { }; 
 }

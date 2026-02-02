@@ -6,7 +6,7 @@ in
   home.packages = with pkgs; [ wlogout ];
 
   wayland.windowManager.hyprland.settings.layerrule = [
-    "blur, wlogout" "dimaround, wlogout" "ignorezero, wlogout"
+    "match:namespace wlogout, blur 1, dim_around 1, ignore_alpha 0"
   ];
 
   xdg.configFile."wlogout/layout".text = ''

@@ -28,6 +28,7 @@ if ! command -v whiptail >/dev/null 2>&1; then
        shell nixpkgs#newt -c "$0" "$@"
 fi
 
+# Username
 while true; do
   username=$(whiptail --inputbox "Enter your username:" 9 40 --title "Username" 3>&1 1>&2 2>&3) || exit 1
 
@@ -46,5 +47,59 @@ while true; do
   fi
 done
 
-echo "${ok}Username set to ${green}${username}${reset}"
+# Host
+base_dir="./hosts"
+
+mapfile -t names < <(find "$base_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+
+args=()
+first=1
+for name in "${names[@]}"; do
+  d="$base_dir/$name"
+  status="OFF"
+  if (( first )); then status="ON"; first=0; fi
+  args+=("$name" "$d" "$status")
+done
+
+if ((${#args[@]} == 0)); then
+  echo "No directories found under: $base_dir" >&2
+  exit 1
+fi
+
+while true; do
+  host=$(whiptail --title "Choose a host:" --radiolist "Pick one:" 20 80 10 "${args[@]}" 3>&1 1>&2 2>&3 ) || exit 1
+
+  if [[ ! -d "$base_dir/$host" ]]; then
+    whiptail --title "Missing host" --msgbox "Directory no longer exists: $base_dir/$host" 8 60
+    continue
+  fi
+
+  break
+done
+
+# Pkgs
+#while true; do
+  
+#done
+
+# Confirmation to continue
+if ! whiptail --yesno "Proceed with install for host '$host' and username '$username'?" 10 70 --title "Continue"; then
+  echo "${info}Exiting."
+  exit 0
+fi
+
+# Install
+echo "${info}Starting system build."
+echo "${info}This could take a while..."
+sudo nixos-rebuild switch --flake ".#${host}"
+
+echo "${ok}Done!"
+
+# Confirmation to reboot
+if whiptail --yesno "Reboot now?" 8 40 --title "Restart"; then
+  sudo systemctl reboot
+else
+  echo "${info}Skipping reboot."
+fi
+
 exit 0

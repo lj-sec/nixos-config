@@ -24,9 +24,9 @@
 </div>
 
 My fully declarative NixOS configuration, managed with flakes and home-manager.
-It’s built for a clean, reliable, and reproducible single-user environment optimized for productivity and schoolwork with support for Steam/Proton, virtualization, and lightweight security/pentesting tooling.
+It’s built for a clean, reliable, and reproducible single-user environment optimized for productivity and schoolwork with support for Steam/Proton, virtualization, and lightweight security/pentesting tooling. A Kali Linux distrobox container will be created at login if not present, and install the tools listed in the `kali/apt-packages.txt` file.
 The configuration also enables `allowUnfree = true;` to support proprietary applications like Brave, Spotify, and Steam.
-Packages and configurations evolve as my workflow changes.
+Packages and configurations will evolve as my workflow changes.
 
 ---
 
@@ -51,9 +51,11 @@ A few visuals of the desktop and utilities included in this setup:
 nixos-config/
 ├── flake.nix
 ├── flake.lock
+├── kali/
 ├── hosts/
 │   ├── t14g5-nixos/
-│   └── omen30l-nixos/
+│   ├── omen30l-nixos/
+│   └── etc...
 ├── modules/
 │   ├── core/
 │   │   └── services/
@@ -112,7 +114,7 @@ This setup was primarily built and tested on a Lenovo ThinkPad T14 Gen5 (AMD, 21
 Some quirks have been noted:
  - This keyboard's micmute button and LED have been impossible to configure, as it is not throwing XF86AudioMicMute when pressed as it should. In this repo I have created a script and a service that hooks into wireplumber and pipewire to ensure the accuracy of the LED via writing directly to `/sys/class/leds/platform::micmute/brightness` and the waybar custom-mic module. For now, I have also bound SUPER + M to toggle the microphone.
  - The Steam games that have been tested on the ThinkPad (i.e. Noita, Balatro) have only launched when forced to use the GE-Proton Compatibility tool. When using GE-Proton, no issues.
- - The custom waybar-lyric module will use high CPU when Spotify has not been launched at least once in the environment. Workaround is Spotify is launched in workspace 5 on boot. This module works cleanly unless the Spotify DJ is talking, to which it crashes.
+ - ~~The custom waybar-lyric module will use high CPU when Spotify has not been launched at least once in the environment. Workaround is Spotify is launched in workspace 5 on boot. This module works cleanly unless the Spotify DJ is talking, to which it crashes.~~ Patched!
 
 The other system currently being tested is an HP Omen 30L (i9-10850K, RTX 3070), which successfully built on the second attempt after configuring the swapfile correctly, despite the hardware differences. Updates to come.
 

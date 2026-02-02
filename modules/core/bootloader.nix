@@ -5,7 +5,7 @@
   ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages;
     consoleLogLevel = 3;
     
     kernelParams = [
@@ -27,8 +27,8 @@
 
   nixos-boot = {
     enable = true;
-    theme  = "evil-nixos-centered";   # <- pick the theme here
-    # duration = 3.0;          # optional: force minimum seconds to show splash
-    bgColor = { red = 0; green = 0; blue = 0; };  # tweak background
+    theme  = "evil-nixos-centered";
+    # duration = 3.0;
+    bgColor = { red = 0; green = 0; blue = 0; };
   };
 }

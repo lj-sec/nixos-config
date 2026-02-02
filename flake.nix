@@ -6,6 +6,8 @@
     nix-colors.url = "github:Misterio77/nix-colors";
     nixos-boot.url = "github:lj-sec/nixos-boot";
 
+    globalprotect-openconnect.url = "github:yuezk/GlobalProtect-openconnect";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";

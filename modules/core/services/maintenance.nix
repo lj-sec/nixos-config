@@ -6,8 +6,8 @@
   # Btrfs: periodic scrub if you’re on Btrfs (comment out if not)
   services.btrfs.autoScrub = {
     enable = true;
-    interval = "monthly";
-    # fileSystems = [ "/" "/home" ]; # optionally specify
+    interval = "weekly";
+    fileSystems = [ "/" ];
   };
 
   # Journald size cap so logs don't balloon
