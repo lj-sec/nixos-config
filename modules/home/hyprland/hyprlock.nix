@@ -21,7 +21,7 @@ in
       background = [
         {
           monitor = "";
-          path = "${../../../wallpapers/blackwave.jpg}";
+          path = "${../../../wallpapers/blackwave-cat.jpg}";
           blur_passes = 1;
           contrast = 0.90;
           brightness = 0.90;

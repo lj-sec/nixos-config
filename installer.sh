@@ -28,6 +28,8 @@ if ! command -v whiptail >/dev/null 2>&1; then
        shell nixpkgs#newt -c "$0" "$@"
 fi
 
+whiptail --msgbox "Warning: This installer is in an extremely early state, recommend to install manually!" 8 50 --title "Warning"
+
 # Username
 while true; do
   username=$(whiptail --inputbox "Enter your username:" 9 40 --title "Username" 3>&1 1>&2 2>&3) || exit 1

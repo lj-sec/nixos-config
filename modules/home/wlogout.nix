@@ -1,6 +1,18 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   p = config.colorScheme.palette;
+
+  clean = s: lib.removePrefix "#" s;
+
+  hexToInt = h: lib.fromHexString ("0x" + h);
+
+  rgb = hex: let h = clean hex; in {
+    r = hexToInt (builtins.substring 0 2 h);
+    g = hexToInt (builtins.substring 2 2 h);
+    b = hexToInt (builtins.substring 4 2 h);
+  };
+
+  base00 = rgb p.base00;
 in
 {
   home.packages = with pkgs; [ wlogout ];
@@ -24,7 +36,7 @@ in
       color: #${p.base05};
     }
 
-    window { background-color: transparent; }
+    window { background-color: alpha(#${p.base00}, 0.85); }
 
     button {
       background-color: #${p.base00};

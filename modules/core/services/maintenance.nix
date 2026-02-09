@@ -22,4 +22,6 @@
     dates = "weekly";
     options = "--delete-older-than 14d";
   };
+
+  services.udisks2.enable = true;
 }

@@ -10,9 +10,9 @@ in
   xdg.configFile."waypaper/config.ini".text = ''
     [Settings]
     language = en
-    folder = ~/repos/nixos-config/wallpapers
+    folder = ~/Documents/repos/nixos-config/wallpapers
     monitors = all
-    wallpaper = ~/repos/nixos-config/wallpapers/redtree.jpg
+    wallpaper = ~/Documents/repos/nixos-config/wallpapers/nix-wallpaper-catppuccin.jpg
     backend = swww
     fill = fill
     sort = name

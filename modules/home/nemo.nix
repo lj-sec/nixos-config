@@ -13,5 +13,5 @@
             file_manager = "${pkgs.nemo}/bin/nemo";
         };
     };
-};
+  };
 }

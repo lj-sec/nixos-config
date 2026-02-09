@@ -27,5 +27,7 @@
     ./sleep.nix
     # Sync certain folders
     ./syncthing.nix
+    # Yikes
+    ./jank.nix
   ];
 }

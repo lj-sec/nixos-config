@@ -70,6 +70,7 @@
     lolcat
     waybar-lyric
     prismlauncher
+    rpi-imager
 
     # GUI Tools
     #

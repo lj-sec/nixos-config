@@ -3,18 +3,19 @@
 let
   fontName = "0xProto Nerd Font";
   fontSize = 9;
+  cursorSize = 12;
 in
 {
   home.packages = with pkgs; [
     papirus-icon-theme
-    adw-gtk3
+    magnetic-catppuccin-gtk
   ];
 
   home.pointerCursor = {
     gtk.enable = true;
     package = pkgs.afterglow-cursors-recolored;
     name = "Afterglow-Recolored-Dracula-Red";
-    size = 12;
+    size = cursorSize;
   };
 
   gtk = {
@@ -26,8 +27,8 @@ in
     };
 
     theme = {
-      package = pkgs.adw-gtk3;
-      name = "adw-gtk3-dark";
+      package = pkgs.magnetic-catppuccin-gtk;
+      name = "Catppuccin-GTK-Dark";
     };
 
     iconTheme = {

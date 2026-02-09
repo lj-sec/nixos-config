@@ -7,5 +7,7 @@
     ./fonts.nix
     # GTK theming for apps that support it + cursor
     ./gtk.nix
+    # QT theming
+    ./qt.nix
   ];
 }
