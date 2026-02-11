@@ -2,7 +2,7 @@
 
 let
   fontName = "0xProto Nerd Font";
-  fontSize = 9;
+  fontSize = 10;
   cursorSize = 12;
 in
 {

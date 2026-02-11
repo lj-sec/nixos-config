@@ -1,10 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
+let
+  p = config.colorScheme.palette;
+in
 {
   programs.fastfetch = {
     enable = true;
     settings = {
       logo = {
-        source = "nixos_small";
+        type = "small";
+        source = "";
         padding = {
           right = 1;
         };
@@ -13,7 +17,7 @@
         size = {
           binaryPrefix = "si";
         };
-        color = "red";
+        color = "#${p.base0D}";
         separator = ": ";
       };
       modules = [

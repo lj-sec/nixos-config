@@ -10,7 +10,7 @@
       "editor.FontFamily" = "JetBrainsMono Nerd Font, monospace";
       "terminal.integrated.fontFamily" = "'Maple Mono', 'SymbolsNerdFont'";
       "editor.fontSize" = 16;
-      "workbench.colorTheme" = "Ayu Dark";
+      "workbench.colorTheme" = "Catppuccin Mocha";
       "explorer.confirmDragAndDrop" = false;
     };
   };

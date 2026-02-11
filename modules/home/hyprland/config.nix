@@ -16,7 +16,6 @@ in
       waybar &                     # start the rest after unlock
       swaync &
       swww-daemon &
-      hyprctl dispatch exec "[workspace 5 silent] spotify" # waybar-lyric eats cpu unless spotify is launched
       wl-clip-persist --clipboard both &
     '';
   };
@@ -136,16 +135,37 @@ in
         };
 
         bind = [
+          # Term
           "$mainMod, Return, exec, ${terminal}"
+          "$mainMod SHIFT, Return, exec, ${terminal} distrobox enter kali -- bash"
+          
+          # Browser
           "$mainMod, B, exec, ${browser}"
+
+          # Kill
           "$mainMod, Q, killactive,"
+          
+          # Fullscreen
           "$mainMod, F, fullscreen, 1"
           "$mainMod SHIFT, F, fullscreen, 0"
+          
+          # App launcher
           "$mainMod, D, exec, rofi -show drun || pkill rofi"
+
+          # Lock screen
           "$mainMod, Escape, exec, hyprlock"
+
+          # Color picker
           "$mainMod, C, exec, hyprpicker -a"
+
           "$mainMod, T, togglefloating"
+          
+          # Apps
           "$mainMod, N, exec, sticky -n"
+          "$mainMod, V, exec, codium"
+
+          # Make opaque
+          "$mainMod, O, setprop, active opaque toggle"
 
           # Screenshots
           "$mainMod, S, exec, grimblast --notify --freeze copy area"
@@ -225,8 +245,8 @@ in
           "$mainMod, M,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SOURCE@ toggle"
 
           # Brightness
-          ",XF86MonBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl set +10%"
-          ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl set 10%-"
+          ",XF86MonBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl set +5%"
+          ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl set 5%-"
         ];
       })
     ];

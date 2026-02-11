@@ -9,11 +9,11 @@ in
     * {
       bg-col:       #${p.base01};
       bg-col-light: #${p.base00};
-      border-col:   #${p.base08};
+      border-col:   #${p.base05};
       selected-col: #${p.base03};
-      alt:          #${p.base09};
+      alt:          #${p.base0E};
       fg-col:       #${p.base05};
-      fg-col2:      #${p.base08};
+      fg-col2:      #${p.base0E};
       grey:         #${p.base03};
       highlight:    @alt;
     }
@@ -21,6 +21,7 @@ in
 
   xdg.configFile."rofi/config.rasi".text = ''
     configuration{
+      click-to-exit: true;
       modi: "run,drun,window";
       lines: 5;
       cycle: false;

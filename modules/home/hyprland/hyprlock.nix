@@ -12,10 +12,32 @@ in
     settings = {
       general = {
         hide_cursor = true;
-        no_fade_in = false;
-        disable_loading_bar = true;
-        ignore_empty_input = false;
+
+        # If you accidentally hit Enter, don't "fail" just because input is empty.
+        ignore_empty_input = true;
+
+        # Render widgets immediately; avoids weird “late” UI.
+        immediate_render = true;
+
+        # Keep your preference
         fractional_scaling = 0;
+
+        # How long until the UI resets after a failed attempt (ms).
+        fail_timeout = 1800;
+
+        # Avoid trailing newlines from cmd[] labels
+        text_trim = true;
+      };
+
+      # Key change: use Hyprlock's fingerprint flow (no Enter dance).
+      # This uses fprintd in parallel; and we disable PAM entirely to make it fingerprint-only.
+      auth = {
+        "pam:enabled" = false;
+
+        "fingerprint:enabled" = true;
+        "fingerprint:ready_message" = "Touch fingerprint sensor";
+        "fingerprint:present_message" = "Scanning fingerprint…";
+        "fingerprint:retry_delay" = 350;
       };
 
       background = [
@@ -29,39 +51,41 @@ in
           vibrancy_darkness = 0.0;
         }
       ];
-    
+
       label = [
-        # Time
+        # Time (use Hyprlock's built-in $TIME; no shell spam)
         {
           monitor = "";
-          text = ''cmd[update:1000] echo " $(date +'%H:%M')"'';
+          text = " $TIME";
           color = "#${p.base05}";
           font_size = 115;
-          font_family = "${font}";
+          font_family = font;
           shadow_passes = 3;
           position = "250, -50";
           halign = "center";
           valign = "center";
         }
+
         # Date
         {
           monitor = "";
           text = ''cmd[update:60000] echo "- $(date +'%A, %B %d') -" '';
           color = "#${p.base04}";
           font_size = 18;
-          font_family = "${font}";
+          font_family = font;
           position = "250, -150";
           halign = "center";
           valign = "center";
         }
+
         # Username
         {
           monitor = "";
           text = "$USER";
           color = "#${p.base06}";
           font_size = 15;
-          font_family = "${font}";
-          position = "0, 131";
+          font_family = font;
+          position = "0, 145";
           halign = "center";
           valign = "bottom";
         }
@@ -70,24 +94,28 @@ in
       input-field = [
         {
           monitor = "";
-          size = "300, 50";
+          size = "275, 40";
           outline_thickness = 1;
           rounding = 10;
 
           outer_color = withA p.base01 "33";
           inner_color = withA p.base01 "33";
-          color = "#${p.base0D}";
           font_color = "#${p.base05}";
           fail_color = "#${p.base08}";
-          fail_text = "$FAIL";
-          fail_transition = 300;
-          font_size = 14;
-          font_family = "${font}";
+
+          font_size = 11;
+          font_family = font;
 
           hide_input = true;
-          placeholder_text = ''Press Enter to authenticate'';
+          fade_on_empty = false;
 
-          position = "0, 125";
+          # Live prompt text from fingerprint auth
+          placeholder_text = "<i>$FPRINTPROMPT</i>";
+
+          # On failure, show the reason and attempts
+          fail_text = "<i>$FAIL</i> <b>($ATTEMPTS)</b>";
+
+          position = "0, 100";
           halign = "center";
           valign = "bottom";
         }

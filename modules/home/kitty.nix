@@ -3,7 +3,7 @@ let
   p = config.colorScheme.palette;
   custom = {
     font = "Maple Mono";
-    font_size    = 9.0;
+    font_size    = 10;
     font_weight  = "Bold";
     text_color   = "#${p.base05}";
     background_0 = "#${p.base00}";
@@ -17,7 +17,7 @@ let
     blue    = "#${p.base0D}";
     magenta = "#${p.base0E}";
     brown   = "#${p.base0F}";
-    opacity = "0.75"; 
+    opacity = "1";
   };
 in
 {
@@ -27,7 +27,7 @@ in
       foreground = "${text_color}";
       background = "${background_0}";
 
-      color0 = background_0;
+      color0 = background_1;
       color1 = red;
       color2 = green;
       color3 = yellow;
@@ -56,6 +56,8 @@ in
     keybindings = {
       "ctrl+shift+c" = "copy_to_clipboard";
       "ctrl+shift+v" = "paste_from_clipboard";
+      "ctrl+equal"       = "change_font_size all +0.5";
+      "ctrl+minus"       = "change_font_size all -0.5";
     };
     extraConfig = ''
       mouse_map right  press paste_from_clipboard

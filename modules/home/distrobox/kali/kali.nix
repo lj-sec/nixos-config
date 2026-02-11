@@ -27,7 +27,7 @@ in
     executable = true;
   };
 
-  # Oneshoot service exists but is NOT tied to default.target; activation will start it.
+  # Oneshoot service
   systemd.user.services.kali-distrobox-ensure = {
     Unit = {
       Description = "Ensure Kali distrobox exists and is bootstrapped";

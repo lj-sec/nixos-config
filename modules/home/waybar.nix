@@ -1,6 +1,6 @@
-{ config, username, ... }:
+{ pkgs, config, username, ... }:
 let
-  p = config.colorScheme.palette; 
+  p = config.colorScheme.palette;
   custom = {
     font = "0xProto Nerd Font";
     size_launcher = "20px";
@@ -21,185 +21,167 @@ let
     opacity = "1";
     indicator_height = "2px";
   };
+
+  waybarCava = pkgs.writeShellScriptBin "WaybarCava" ''
+    set -euo pipefail
+
+    if ! command -v cava >/dev/null 2>&1; then
+      echo "cava not found in PATH" >&2
+      exit 1
+    fi
+
+    bar="▁▂▃▄▅▆▇█"
+
+    dict="s/;//g"
+    bar_length=''${#bar}
+    for ((i = 0; i < bar_length; i++)); do
+      dict+=";s/$i/''${bar:$i:1}/g"
+    done
+
+    RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/tmp}"
+    pidfile="$RUNTIME_DIR/waybar-cava.pid"
+    if [ -f "$pidfile" ]; then
+      oldpid=$(cat "$pidfile" || true)
+      if [ -n "''${oldpid:-}" ] && kill -0 "$oldpid" 2>/dev/null; then
+        kill "$oldpid" 2>/dev/null || true
+        sleep 0.1 || true
+      fi
+    fi
+    echo $$ > "$pidfile"
+
+    config_file=$(mktemp "''${RUNTIME_DIR}/waybar-cava.XXXXXX.conf")
+    cleanup() { rm -f "$config_file" "$pidfile"; }
+    trap cleanup EXIT INT TERM
+
+    cat >"$config_file" <<EOF
+    [general]
+    framerate = 30
+    bars = 10
+
+    [input]
+    method = pulse
+    source = auto
+
+    [output]
+    method = raw
+    raw_target = /dev/stdout
+    data_format = ascii
+    ascii_max_range = 7
+    EOF
+
+    exec cava -p "$config_file" | sed -u "$dict"
+  '';
 in
 {
   programs.waybar = {
-
     enable = true;
+
     style = with custom; ''
-      
-      /* Affecting the whole bar */
       * {
         font-family: "${font}";
         font-weight: ${font_weight};
         font-size: ${font_size};
-        opacity: ${opacity};
         min-height: 0;
       }
+
       window#waybar {
-        background: ${background_1};
+        background: transparent;
       }
-      #workspaces, #custom-lyrics, #cpu, #memory, #network, #battery, #custom-mic, #pulseaudio, #custom-swaync, #custom-power {
+
+      #custom-launcher,
+      #workspaces,
+      #clock,
+      #tray,
+      #custom-cava,
+      #custom-lyrics,
+      #cpu,
+      #memory,
+      #network,
+      #battery,
+      #custom-mic,
+      #pulseaudio,
+      #custom-swaync,
+      #custom-power {
         background: ${background_0};
-        margin: 2px 2px;
-        padding: 4px 4px;
+        margin: 2px 1px;
+        padding: 3px 6px;
         border-radius: 8px;
+        border: 1px solid ${border_color};
       }
 
-      /* Modules from left to right: */
-
-      /* Snowflake launcher */
-      #custom-launcher {
-        font-size: ${size_launcher};
-        margin-left: 15px;
-        padding-right: 10px;
-      }
-
-      /* Hyprland workspaces */
-      #workspaces {
-        padding-left: 15px;
-        box-shadow: inset 3px 0 0 0 ${red},
-                    inset -3px 0 0 0 ${red};
-      }
-      #workspaces:hover {
-        box-shadow: inset 4px 0 0 0 ${red},
-                    inset -4px 0 0 0 ${red};
-      }
       #workspaces button {
         color: ${yellow};
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-right: 10px;
-        margin-bottom: -3px;
-        margin-top: -3px;
+        background: transparent;
+        padding: 0 6px;
+        margin: 0 4px 0 0;
+        border-radius: 6px;
       }
       #workspaces button.empty {
         color: ${text_color};
+        opacity: 0.7;
       }
       #workspaces button.active {
         color: ${orange};
       }
 
-      /* Clock and tray bars */
-      #clock, #tray {
-        background: ${background_0};
-        margin: 3px 2px;
-        padding: 4px 8px;
-        border-radius: 10px;
-        border: 1px solid ${border_color};
-      }
-
-      /* Spotify songs and lyrics */
-      #custom-lyrics {
-        margin: 0 6px;
-        padding: 0 10px;
-        box-shadow: inset 3px 0 0 0 ${green},
-                    inset -3px 0 0 0 ${green};
-      }
-      #custom-lyrics.paused {
-        opacity: 0.7;
-      }
-      #custom-lyrics:hover  {
-        box-shadow: inset 4px 0 0 0 ${green},
-                    inset -4px 0 0 0 ${green};
-      }
-
-      /* Cava
       #custom-cava {
-        font-family: "0xProto Nerd Font", monospace;
-        font-size: 12px;
-        padding: 2px 6px;
-        min-width: 40px;
+        min-width: 110px;
+      }
 
-        color: ${green};
-        background: ${background_0};
-        border-radius: 6px;
-        border: 1px solid ${border_color};
-      } */
-
-      /* CPU Pill */
-      #cpu                  { box-shadow: inset 3px 0 0 0 ${red},
-                                          inset -3px 0 0 0 ${red}; }
-      #cpu:hover            { box-shadow: inset 4px 0 0 0 ${red},
-                                          inset -4px 0 0 0 ${red}; }
-
-      /* RAM Pill */
-      #memory               { box-shadow: inset 3px 0 0 0 ${cyan},
-                                          inset -3px 0 0 0 ${cyan}; }
-      #memory:hover         { box-shadow: inset 4px 0 0 0 ${cyan},
-                                          inset -4px 0 0 0 ${cyan}; }
-      
-      /* Networking pill with multiple states */
-      #network              { box-shadow: inset 3px 0 0 0 ${magenta},
-                                          inset -3px 0 0 0 ${magenta}; }
-      #network:hover        { box-shadow: inset 4px 0 0 0 ${magenta},  
-                                          inset -4px 0 0 0 ${magenta}; }
-      #network.disconnected       { box-shadow: inset 3px 0 0 0 ${red},
-                                                inset -3px 0 0 0 ${red}; }
-      #network.disconnected:hover { box-shadow: inset 4px 0 0 0 ${red},    
-                                                inset -4px 0 0 0 ${red}; }
-      #network.disabled           { box-shadow: inset 3px 0 0 0 ${border_color},
-                                                inset -3px 0 0 0 ${border_color}; }
-      #network.disabled:hover     { box-shadow: inset 4px 0 0 0 ${border_color},
-                                                inset -4px 0 0 0 ${border_color}; }
-      
-      /* Battery pill with multiple states */
-      #battery              { box-shadow: inset 3px 0 0 0 ${yellow},
-                                          inset -3px 0 0 0 ${yellow}; }
-      #battery:hover        { box-shadow: inset 4px 0 0 0 ${yellow},
-                                          inset -4px 0 0 0 ${yellow}; }
-      #battery.full, #battery.charging                { box-shadow: inset 3px 0 0 0 ${green},
-                                                                    inset -3px 0 0 0 ${green}; }
-      #battery.full:hover, #battery.charging:hover    { box-shadow: inset 4px 0 0 0 ${green},
-                                                                    inset -4px 0 0 0 ${green}; }
-      #battery.warning, #battery.critical             { box-shadow: inset 3px 0 0 0 ${red},
-                                                                    inset -3px 0 0 0 ${red};   }
-      #battery.warning:hover, #battery.critical:hover { box-shadow: inset 4px 0 0 0 ${red},
-                                                                    inset -4px 0 0 0 ${red};   }
-      
-      /* Custom mic module to ensure state updates properly */
-      #custom-mic {
+      #custom-lyrics {
         padding-left: 8px;
-        margin-right: 0px;
-        box-shadow: inset 3px 0 0 0 ${blue};
+        padding-right: 8px;
       }
-      #custom-mic:hover     { box-shadow: inset 4px 0 0 0 ${blue};   }
 
-      /* Audio pill */
-      #pulseaudio           { box-shadow: inset -3px 0 0 0 ${blue}; margin-left: 0px; }
-      #pulseaudio:hover     { box-shadow: inset -4px 0 0 0 ${blue};  }
-      
-      /* Notification launcher */
-      #custom-swaync        { box-shadow: inset 3px 0 0 0 ${orange}; }
-      #custom-swaync:hover  { box-shadow: inset 4px 0 0 0 ${orange}; }
-      
-      /* Wlogout screen launcher */
-      #custom-power {
-        padding-left: 3px;
-        padding-right: 10px;
-        box-shadow: inset -3px 0 0 0 ${orange};
+      #custom-mic {
+        margin-right: 0px;
+        border-radius: 8px 0 0 8px;
+        border-right: 0;
+        padding-right: 2px;
       }
-      #custom-power:hover   { box-shadow: inset -4px 0 0 0 ${orange}; }
+      #pulseaudio {
+        margin-left: 0px;
+        border-radius: 0 8px 8px 0;
+        padding-left: 2px;
+      }
+
+      #custom-swaync {
+        margin-right: 0px;
+        border-radius: 8px 0 0 8px;
+        border-right: 0;
+        padding-right: 2px;
+      }
+      #custom-power {
+        margin-left: 0px;
+        border-radius: 0 8px 8px 0;
+        padding-left: 2px;
+      }
+
+      tooltip {
+        background: ${background_1};
+        border: 1px solid ${border_color};
+        border-radius: 8px;
+      }
     '';
 
     settings.mainBar = with custom; {
       position = "top";
       layer = "top";
-      height = 20;
+      height = 28;
+
       margin-top = 0;
       margin-bottom = 0;
       margin-right = 0;
+
       modules-left = [
         "custom/launcher"
         "hyprland/workspaces"
         "clock"
         "tray"
-      ];
-      modules-center = [
+        "custom/cava"
         "custom/lyrics"
       ];
       modules-right = [
-        # "custom/cava"
         "cpu"
         "memory"
         "custom/mic"
@@ -209,6 +191,7 @@ in
         "custom/swaync"
         "custom/power"
       ];
+
       clock = {
         format = " {:%H:%M}";
         format-alt = " {:%m/%d}";
@@ -221,6 +204,7 @@ in
         };
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] gnome-calendar'";
       };
+
       "hyprland/workspaces" = {
         active-only = false;
         disable-scroll = true;
@@ -247,37 +231,43 @@ in
           "5" = [ ];
         };
       };
+
       cpu = {
-        format = "<span foreground='${red}'> </span> {usage}%";
-        format-alt = "<span foreground='${red}'> </span> {avg_frequency} GHz";
+        format = "<span foreground='${red}'>[  </span>{usage}% <span foreground='${red}'>]</span>";
+        format-alt = "<span foreground='${red}'>[  </span>{avg_frequency}GHz <span foreground='${red}'>]</span>";
         interval = 2;
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty btop'";
       };
+
       memory = {
-        format = "<span foreground='${cyan}'> </span> {}%";
-        format-alt = "<span foreground='${cyan}'> </span> {used} GiB";
+        format = "<span foreground='${cyan}'>[  </span>{}% <span foreground='${cyan}'>]</span>";
+        format-alt = "<span foreground='${cyan}'>[  </span>{used}GiB <span foreground='${cyan}'>]</span>";
         interval = 2;
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty btop'";
       };
+
       network = {
-        format-wifi = "<span foreground='${magenta}'> </span> {signalStrength}%";
-        format-ethernet = "<span foreground='${magenta}'>󰈀 </span>";
+        format-wifi = "<span foreground='${magenta}'>[  </span>{signalStrength}% <span foreground='${magenta}'>]</span>";
+        format-ethernet = "<span foreground='${magenta}'>[ 󰈀 ]</span>";
         tooltip-format = "Connected to {essid} {ifname} via {gwaddr}";
-        format-linked = " {ifname} (No IP)";
-        format-disconnected = "<span foreground='${red}'>󰌙 </span>";
+        format-linked = "<span foreground='${magenta}'>[ {ifname}</span>(No IP)<span foreground='${magenta}'>]</span>";
+        format-disconnected = "<span foreground='${red}'>[ 󰌙 ]</span>";
         on-click = "hyprctl dispatch exec '[float; center; size 950 650] kitty --title float_kitty nmtui'";
       };
+
       tray = {
-        icon-size = 15;
-        spacing = 10;
+        icon-size = 14;
+        spacing = 6;
       };
-      "pulseaudio" = {
-        format = "<span foreground='${blue}'> </span>{volume}%";
-        format-muted = "<span foreground='${blue}'> </span>{volume}%";
+
+      pulseaudio = {
+        format = "<span foreground='${blue}'>  </span>{volume}% <span foreground='${blue}'>]</span>";
+        format-muted = "<span foreground='${blue}'>  </span>{volume}% <span foreground='${blue}'>]</span>";
         scroll-step = 2;
         on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
       };
+
       "custom/mic" = {
         return-type = "json";
         interval = 1;
@@ -301,38 +291,27 @@ else
   vol="--"
 fi
 
-# normal span like your other modules
-icon_markup="<span foreground='${custom.blue}'>$icon</span>"
-
-# careful: wrap JSON in single quotes, inner values in double quotes
+icon_markup="<span foreground='${blue}'>$icon</span>"
 printf '{"text":"%s %s%%","tooltip":"Mic %s (%s)","class":"%s"}\n' \
   "$icon_markup" "$vol" "$status" "$vol%" "$status"
 BASH
         '';
-        format = "{text}";
+        format = "<span foreground='${blue}'>[ </span>{text} ";
         on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle; killall -RTMIN+5 waybar";
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
         on-scroll-up = "wpctl set-volume @DEFAULT_SOURCE@ 2%+ --limit 1.0; killall -RTMIN+5 waybar";
         on-scroll-down = "wpctl set-volume @DEFAULT_SOURCE@ 2%- --limit 1.0; killall -RTMIN+5 waybar";
         on-click-middle = "wpctl set-volume @DEFAULT_SOURCE@ 100% --limit 1.0; killall -RTMIN+5 waybar";
       };
+
       battery = {
-        format =              "<span foreground='${yellow}'>󰁹</span> {capacity}%";
-        format-charging =     "<span foreground='${green}'>󰂄</span> {capacity}%";
-        format-full =         "<span foreground='${green}'>󰂅</span> {capacity}%";
-        format-almost =       "<span foreground='${yellow}'>󰂂</span> {capacity}%";
-        format-threequarter = "<span foreground='${yellow}'>󰂀</span> {capacity}%";
-        format-half =         "<span foreground='${yellow}'>󰁾</span> {capacity}%";
-        format-quarter =      "<span foreground='${yellow}'>󰁻</span> {capacity}%";
-        format-warning =      "<span foreground='${red}'>󰂎 </span>{capacity}%";
-        format-critical =     "<span foreground='${red}'>󰂎!</span>{capacity}%";
+        format =              "<span foreground='${yellow}'>[ 󰁹 </span>{capacity}% <span foreground='${yellow}'>]</span>";
+        format-charging =     "<span foreground='${green}'>[ 󰂄 </span>{capacity}% <span foreground='${green}'>]</span>";
+        format-full =         "<span foreground='${green}'>[ 󰂅 </span>{capacity}% <span foreground='${green}'>]</span>";
+        format-warning =      "<span foreground='${red}'>[ 󰂎 </span>{capacity}% <span foreground='${red}'>]</span>";
+        format-critical =     "<span foreground='${red}'>[ 󰂎! </span>{capacity}% <span foreground='${red}'>]</span>";
         interval = 5;
         states = {
-          full = 100;
-          almost = 99;
-          threequarter = 75;
-          half = 50;
-          quarter = 25;
           warning = 10;
           critical = 5;
         };
@@ -341,41 +320,48 @@ BASH
         tooltip-format = "{time}";
         on-click = "hyprctl dispatch exec '[float; center; size 950 650] cpupower-gui'";
       };
-      # "custom/cava" = {
-      #   exec = "sh -c '${config.home.homeDirectory}/.config/waybar/scripts/cava-waybar.sh'";
-      #   signal = 6;
-      #   return-type = "json";
-      # };
+
+      "custom/cava" = {
+        exec = "${waybarCava}/bin/WaybarCava";
+        format = "<span foreground='${cyan}'>[</span> {} <span foreground='${cyan}'>]</span>";
+        tooltip = false;
+      };
+
       "custom/launcher" = {
-        format = "";
-        on-click = "rofi -show drun || pkill rofi";
+        format = "[  ]";
+        on-click = "sh -c 'rofi -show drun || pkill rofi'";
         tooltip = true;
         tooltip-format = "Run Rofi";
       };
+
       "custom/swaync" = {
-        format = "";
+        format = "<span foreground='${orange}'>[  </span>";
         on-click = "sh -c 'sleep 0.1; swaync-client -t -sw'";
         on-click-right = "swaync-client -C";
         tooltip = true;
         tooltip-format = "SwayNC";
       };
+
       "custom/lyrics" = {
         return-type = "json";
-        format = "<span foreground='${green}'>󰐎  </span> {text}";
-        format-alt = "<span foreground='${green}'>󰐎  </span> {text}";
+        format = "<span foreground='${green}'>󰐎  </span>{text}";
+        format-alt = "<span foreground='${green}'>󰐎  </span>{text}";
         hide-empty-text = true;
         escape = true;
         tooltip = false;
         exec-if = "which waybar-lyric";
-        exec = "waybar-lyric --quiet -m150";
-        on-click = "waybar-lyric --toggle";
+        exec = "waybar-lyric --quiet -m55";
+        on-click = "waybar-lyric play-pause";
+        on-click-right = "waybar-lyric next";
+        on-click-middle = "waybar-lyric previous";
       };
+
       "custom/power" = {
-        format = "";
+        format = "<span foreground='${orange}'>  ]</span>";
         tooltip = true;
         tooltip-format = "Power menu";
         on-click = "wlogout -b 3 -n -P 0 -T 250 -B 250 -L 500 -R 500";
       };
-    }; 
+    };
   };
 }

@@ -1,6 +1,15 @@
 { pkgs, host, config, ... }:
 let
   p = config.colorScheme.palette;
+  red     = "#${p.base08}";
+  orange  = "#${p.base09}";
+  yellow  = "#${p.base0A}";
+  green   = "#${p.base0B}";
+  cyan    = "#${p.base0C}";
+  blue    = "#${p.base0D}";
+  magenta = "#${p.base0E}";
+  brown   = "#${p.base0F}";
+  white   = "#${p.base05}";
 in
 {
   # Workaround to not break emergency shell
@@ -70,19 +79,23 @@ in
         set user (whoami)
         set host (hostname)
         set sym '$'
-        if test "$user" = root
+        if test "$user" = "root"
           set sym '#'
         end
+        if test -n "$CONTAINER_ID"
+          set distro "-$CONTAINER_ID"
+        else
+          set distro ""
+        end
 
-        set cC (set_color "#${p.base0C}")
-        set cB (set_color "#${p.base0B}")
-        set cA (set_color "#${p.base0A}")
-        set cE (set_color "#${p.base0E}")
-        set c8 (set_color "#${p.base08}")
+        set cB (set_color "${blue}")
+        set cW (set_color "${white}")
+        set cM (set_color "${magenta}")
+        set cG (set_color "${green}")
         set n  (set_color normal)
 
-        set line1 (string join "" $cC "┌──(" $cB $user $n "@" $cA $host $n ")─[" $cE (prompt_pwd) $n "]")
-        set line2 (string join "" $cC "└─" $c8 $sym " " $n)
+        set line1 (string join -- "" $cB "┌──(" $cM $user $n "@" $cM $host $cG $distro $n ")─[" $cM (prompt_pwd) $n "]")
+        set line2 (string join -- "" $cB "└─" $cM $sym " " $n)
 
         echo \n$line1
         echo $line2

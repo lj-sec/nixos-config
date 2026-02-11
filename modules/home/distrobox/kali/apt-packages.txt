@@ -1,3 +1,9 @@
+# This .txt file is called in ./kali.nix and its associated service
+# Add any packages to install to Kali here:
+
+# ultra necessary
+fastfetch
+
 # core
 ca-certificates
 zsh

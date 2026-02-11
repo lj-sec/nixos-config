@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
-  home.packages = with pkgs; [ 
-    brave
+  home.packages = with pkgs; [
+    brave    
   ];
 
   # Make Brave default
