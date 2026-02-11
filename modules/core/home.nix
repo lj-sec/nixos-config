@@ -15,6 +15,7 @@
       };
       programs.home-manager.enable = true;
     };
+    backupFileExtension = "hm-bak";
   };
 
   users.users.${username} = {

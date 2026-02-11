@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
-  programs.vscode.profiles.default = {
+  programs.vscode.profiles.default = lib.mkForce {
     extensions = with pkgs.vscode-extensions; [
       jnoortheen.nix-ide
       catppuccin.catppuccin-vsc

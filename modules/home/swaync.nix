@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   p = config.colorScheme.palette;
 in
@@ -48,7 +48,7 @@ in
       };
     };
 
-    style = ''
+    style = lib.mkForce ''
       /* ===== nix-colors tokens ===== */
       @define-color base     #${p.base01};
       @define-color mantle   #${p.base00};

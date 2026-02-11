@@ -18,7 +18,7 @@ in
     size = cursorSize;
   };
 
-  gtk = {
+  gtk = lib.mkForce {
     enable = true;
 
     font = {

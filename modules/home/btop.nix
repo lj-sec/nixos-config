@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
-  programs.btop = {
+  programs.btop = lib.mkForce {
     enable = true;
 
     settings = {

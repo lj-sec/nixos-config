@@ -2,7 +2,7 @@
 {
   imports = [
     # Audio display
-    # ./cava.nix
+    ./cava.nix
     # Wayland Compositor
     ./hyprland
     # Containers
@@ -37,6 +37,8 @@
     ./pass.nix
     # Logout manager
     ./wlogout.nix
+    # Discord client
+    ./vesktop.nix
     # All other packages with no config
     ./packages.nix
   ];

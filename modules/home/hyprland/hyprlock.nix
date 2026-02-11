@@ -1,4 +1,4 @@
-{ config, inputs, pkgs, host, hasFingerprint, ... }:
+{ config, inputs, pkgs, host, hasFingerprint, lib, ... }:
 let
   p = config.colorScheme.palette;
   withA = hex: aa: "#${hex}${aa}";
@@ -22,7 +22,7 @@ let
   else "<i>$PAMPROMPT</i>";
 in
 {
-  programs.hyprlock = {
+  programs.hyprlock = lib.mkForce {
     enable = true;
     package = inputs.hyprlock.packages.${pkgs.stdenv.hostPlatform.system}.hyprlock;
 

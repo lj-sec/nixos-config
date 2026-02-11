@@ -9,5 +9,7 @@
     ./gtk.nix
     # QT theming
     ./qt.nix
+    # Catppuccin
+    ./catppuccin.nix
   ];
 }

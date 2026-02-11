@@ -79,7 +79,6 @@
     ## Markdown
     obsidian
     ## Communication
-    discord
     signal-desktop
     slack
     ## Remote Management
