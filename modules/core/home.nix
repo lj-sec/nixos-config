@@ -1,11 +1,11 @@
-{ inputs, pkgs, username, host, ... }: {
+{ inputs, pkgs, username, host, hasFingerprint, ... }: {
 
   imports = [ inputs.home-manager.nixosModules.home-manager ];
    
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
-    extraSpecialArgs = { inherit inputs username host; };
+    extraSpecialArgs = { inherit inputs username host hasFingerprint; };
     users.${username} = {
       imports = [ ./../home ];
       home = {

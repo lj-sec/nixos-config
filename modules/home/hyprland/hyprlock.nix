@@ -1,8 +1,25 @@
-{ config, inputs, pkgs, host, ... }:
+{ config, inputs, pkgs, host, hasFingerprint, ... }:
 let
   p = config.colorScheme.palette;
   withA = hex: aa: "#${hex}${aa}";
   font = "0xProto Nerd Font";
+  authCfg =
+    if hasFingerprint then {
+      "pam:enabled" = false;
+
+      "fingerprint:enabled" = true;
+      "fingerprint:ready_message" = "Touch fingerprint sensor";
+      "fingerprint:present_message" = "Scanning fingerprint...";
+      "fingerprint:retry_delay" = 350;
+    } else {
+      "pam:enabled" = true;
+      "pam:module" = "hyprlock";
+      "fingerprint:enabled" = false;
+    };
+  placeholder_text =
+  if hasFingerprint
+  then "<i>$FPRINTPROMPT</i>"
+  else "<i>$PAMPROMPT</i>";
 in
 {
   programs.hyprlock = {
@@ -31,14 +48,7 @@ in
 
       # Key change: use Hyprlock's fingerprint flow (no Enter dance).
       # This uses fprintd in parallel; and we disable PAM entirely to make it fingerprint-only.
-      auth = {
-        "pam:enabled" = false;
-
-        "fingerprint:enabled" = true;
-        "fingerprint:ready_message" = "Touch fingerprint sensor";
-        "fingerprint:present_message" = "Scanning fingerprint…";
-        "fingerprint:retry_delay" = 350;
-      };
+      auth = authCfg;
 
       background = [
         {
@@ -110,7 +120,7 @@ in
           fade_on_empty = false;
 
           # Live prompt text from fingerprint auth
-          placeholder_text = "<i>$FPRINTPROMPT</i>";
+          placeholder_text = placeholder_text;
 
           # On failure, show the reason and attempts
           fail_text = "<i>$FAIL</i> <b>($ATTEMPTS)</b>";

@@ -1,6 +1,7 @@
 { pkgs, config, ... }:
 let
   p = config.colorScheme.palette;
+  wallpapersDir = toString ../../../wallpapers;
 in
 {
   home.packages = with pkgs; [
@@ -10,9 +11,9 @@ in
   xdg.configFile."waypaper/config.ini".text = ''
     [Settings]
     language = en
-    folder = ~/Documents/repos/nixos-config/wallpapers
+    folder = ${wallpapersDir}
     monitors = all
-    wallpaper = ~/Documents/repos/nixos-config/wallpapers/nix-wallpaper-catppuccin.jpg
+    wallpaper = ${wallpapersDir}/nix-wallpaper-catppuccin.jpg
     backend = swww
     fill = fill
     sort = name
