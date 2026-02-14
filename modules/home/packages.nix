@@ -52,6 +52,8 @@
     util-linux
     ## Languages
     powershell
+    terraform
+    tflint
     ## Compression
     unzip
     gnutar

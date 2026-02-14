@@ -5,9 +5,9 @@ let
     security.polkit.enable = true;
     services.fwupd.enable = true;
     
-    security.sudo.extraConfig = ''
-      Defaults env_keep += "GIO_EXTRA_MODULES GIO_MODULE_DIR XDG_DATA_DIRS WAYLAND_DISPLAY DISPLAY XDG_RUNTIME_DIR"
-    '';
+    # security.sudo.extraConfig = ''
+    #   Defaults env_keep += "GIO_EXTRA_MODULES GIO_MODULE_DIR XDG_DATA_DIRS WAYLAND_DISPLAY DISPLAY XDG_RUNTIME_DIR"
+    # '';
   };
 
   fp = lib.mkIf hasFingerprint {

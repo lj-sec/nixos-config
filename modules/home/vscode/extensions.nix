@@ -5,6 +5,7 @@
       jnoortheen.nix-ide
       catppuccin.catppuccin-vsc
       catppuccin.catppuccin-vsc-icons
+      hashicorp.terraform
     ];
   };
 }
