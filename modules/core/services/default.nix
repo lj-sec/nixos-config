@@ -15,7 +15,7 @@
     ./bluetooth.nix
     # Greetd -> hyprland
     ./greetd.nix
-    # Networking + tailscale
+    # Networking + VPNs
     ./network.nix
     # Audio configuration
     ./pipewire.nix
@@ -28,6 +28,6 @@
     # Sync certain folders
     ./syncthing.nix
     # Yikes
-    ./jank.nix
+    # ./jank.nix
   ];
 }

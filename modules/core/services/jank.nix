@@ -1,3 +1,5 @@
+# using eth port as forwarder to wifi
+
 { config, pkgs, ... }:
 
 {
@@ -26,10 +28,10 @@
       interface = "enp1s0f0";
       bind-interfaces = true;
 
-      # DHCP range for the gaming PC
+      # DHCP range for the client
       dhcp-range = "192.168.50.100,192.168.50.200,255.255.255.0,12h";
 
-      # Give the PC the laptop as gateway
+      # Give the client this host as gateway
       dhcp-option = [
         "option:router,192.168.50.1"
         "option:dns-server,1.1.1.1,8.8.8.8"

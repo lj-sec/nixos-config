@@ -5,12 +5,13 @@ let
   font = "0xProto Nerd Font";
   authCfg =
     if hasFingerprint then {
-      "pam:enabled" = false;
-
       "fingerprint:enabled" = true;
       "fingerprint:ready_message" = "Touch fingerprint sensor";
       "fingerprint:present_message" = "Scanning fingerprint...";
       "fingerprint:retry_delay" = 350;
+
+      "pam:enabled" = true;
+      "pam:module" = "hyprlock";
     } else {
       "pam:enabled" = true;
       "pam:module" = "hyprlock";
@@ -45,9 +46,7 @@ in
         # Avoid trailing newlines from cmd[] labels
         text_trim = true;
       };
-
-      # Key change: use Hyprlock's fingerprint flow (no Enter dance).
-      # This uses fprintd in parallel; and we disable PAM entirely to make it fingerprint-only.
+      
       auth = authCfg;
 
       background = [
@@ -63,7 +62,6 @@ in
       ];
 
       label = [
-        # Time (use Hyprlock's built-in $TIME; no shell spam)
         {
           monitor = "";
           text = " $TIME";
@@ -116,7 +114,7 @@ in
           font_size = 11;
           font_family = font;
 
-          hide_input = true;
+          hide_input = false;
           fade_on_empty = false;
 
           # Live prompt text from fingerprint auth

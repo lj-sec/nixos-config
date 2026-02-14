@@ -30,6 +30,7 @@
     # CLI Tools
     #
     ## Utils
+    nix-search
     coreutils
     inetutils
     filezilla
@@ -59,7 +60,6 @@
     openvpn
     wireguard-tools
     proxychains-ng
-    inputs.globalprotect-openconnect.packages.${pkgs.stdenv.hostPlatform.system}.default
     ## Goofy
     cava
     sl                # choo-choo

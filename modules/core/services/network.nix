@@ -1,13 +1,20 @@
-{ pkgs, host, ... }:
+{ pkgs, lib, host, ... }:
 {
   networking = {
-    hostName = "${host}";
+    hostName = host;
     networkmanager.enable = true;
-    nameservers = [ "1.1.1.1" "1.0.0.1" ];
   };
+
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "client";
-    # openFirewall = true; # only if you actually want inbound services via TS
   };
+
+  environment.systemPackages = with pkgs; [
+    gpclient
+    glib-networking
+    gsettings-desktop-schemas
+  ];
+
+  programs.dconf.enable = true;
 }

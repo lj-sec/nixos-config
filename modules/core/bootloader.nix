@@ -27,7 +27,7 @@
 
   nixos-boot = {
     enable = true;
-    theme  = "evil-nixos-centered";
+    theme  = "catppuccin-blue-nixos";
     # duration = 3.0;
     bgColor = { red = 0; green = 0; blue = 0; };
   };

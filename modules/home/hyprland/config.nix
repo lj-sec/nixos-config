@@ -227,7 +227,7 @@ in
           "match:class ^(sticky\\.py)$, float 1, size 200 200"
         ];
         
-        monitor = [ "eDP-1,preferred,auto,1" ];
+        monitor = [ "eDP-1,preferred,auto,1" ",preferred,auto,1" ];
 
         xwayland = {
           force_zero_scaling = true;

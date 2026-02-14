@@ -7,9 +7,7 @@
     nixos-boot.url = "github:lj-sec/nixos-boot";
 
     catppuccin.url = "github:catppuccin/nix";
-
-    globalprotect-openconnect.url = "github:yuezk/GlobalProtect-openconnect";
-
+    
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
