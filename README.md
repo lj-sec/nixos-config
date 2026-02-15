@@ -226,7 +226,7 @@ A lot of my inspiration (and some configs) came from [Frost-Phoenix’s nixos-co
 
 ## Background Credit
 
-The wallpapers in the `./wallpapers/` directory were sourced from [WallpaperAccess](https://wallpaperaccess.com/).  
-I do not claim ownership of these images. All rights belong to their respective creators.
+Most wallpapers in the `./wallpapers/` directory were sourced from [WallpaperAccess](https://wallpaperaccess.com/).  
+I do not claim ownership of any these images. All rights belong to their respective creators.
 
 If you are the copyright holder of one of these wallpapers and would like it removed or credited differently, please contact me.
