@@ -14,7 +14,10 @@
     gpclient
     glib-networking
     gsettings-desktop-schemas
+    wireshark
   ];
+
+  programs.wireshark.enable = true;
 
   programs.dconf.enable = true;
 }

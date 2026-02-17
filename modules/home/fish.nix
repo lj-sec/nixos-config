@@ -41,6 +41,7 @@ in
       l  = "ls -alh";
       ll = "ls -l";
       gs = "git status";
+      gpssl = "sudo gpclient --fix-openssl connect";
     };
 
     functions = {
@@ -50,6 +51,48 @@ in
           fastfetch
         end
       '';
+
+      promisc = {
+        description = "promisc <INTERFACE>";
+        body = ''
+          if test (count $argv) -ne 1
+            echo "Usage: promisc <INTERFACE>" >&2
+            exit 1
+          end
+
+          set -l iface $argv[1]
+
+          # Optional sanity check
+          if not ip link show dev $iface >/dev/null 2>&1
+            echo "Interface not found: $iface" >&2
+            exit 1
+          end
+
+          if ip -o link show dev $iface | string match -q '*PROMISC*'
+            sudo ip link set dev $iface promisc off
+            echo "$iface: promisc off"
+          else
+            sudo ip link set dev $iface promisc on
+            echo "$iface: promisc on"
+          end
+        '';
+      };
+
+      passcp = {
+        description = "passcp [ACCOUNT]";
+        body = ''
+          if test (command -v pass) != null
+            set -l account ""
+            if test (count $argv) -eq 1
+              pass show $argv[1] | wl-copy
+            else 
+              echo "Usage: passcp [ACCOUNT]"
+            end
+          else
+            echo "Command 'pass' not found; exiting"
+          end
+        '';
+      };
 
       rebuild = {
         description = "nixos-rebuild [ACTION] [FLAKE] [HOST]";

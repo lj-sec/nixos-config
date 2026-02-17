@@ -9,8 +9,6 @@
     ./hyprlock.nix
     # Executes hyprshade and hyprlock when idling
     ./hypridle.nix
-    # Any session variables that may need to be set directly
-    ./variables.nix
     # Polkit
     ./polkit.nix
     # Screen shader configurations

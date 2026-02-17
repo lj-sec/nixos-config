@@ -14,8 +14,8 @@
     # Qt theming/scaling
     QT_QPA_PLATFORM = "wayland";
     QT_AUTO_SCREEN_SCALE = 1;
-    QT_STYLE_OVERRIDE = "kavantum";
-    QT_QPA_PLATFORMTHEME = "qt5ct";
-    QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
+    # QT_STYLE_OVERRIDE = "kavantum";
+    # QT_QPA_PLATFORMTHEME = "qt5ct";
+    # QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
   };
 }

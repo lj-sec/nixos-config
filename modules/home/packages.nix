@@ -119,7 +119,6 @@
     # openldap
     # kerbrute
     ## Net
-    wireshark
     tcpdump
     ## Wireless
     aircrack-ng

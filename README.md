@@ -84,23 +84,89 @@ nixos-config/
 ## Fish Aliases
 
 <details>
-<summary>rebuild</summary>
+  <summary>rebuild</summary>
 
-### Usage:
-```bash
-rebuild [ACTION] [FLAKE] [HOST]
-```
+  ### Usage:
+  ```bash
+  rebuild [ACTION] [FLAKE] [HOST]
+  ```
 
-### Output:
-```bash
-sudo nixos-rebuild [ACTION] [FLAKE]#[HOST]
-```
+  ### Output:
+  ```bash
+  sudo nixos-rebuild [ACTION] [FLAKE]#[HOST]
+  ```
 
-### Default:
-```bash
-sudo nixos-rebuild switch .#$(hostname)
-```
+  ### Default:
+  ```bash
+  sudo nixos-rebuild switch .#$(hostname)
+  ```
+</details>
 
+<details>
+  <summary>passcp</summary>
+
+  ### Usage:
+  ```bash
+  passcp [ACCOUNT]
+  ```
+
+  ### Output:
+  ```bash
+  pass show [ACCOUNT] | wl-copy
+  ```
+</details>
+
+<details>
+<summary>promisc</summary>
+
+  ### Usage:
+  ```bash
+  promisc [INTERFACE]
+  ```
+
+  ### Output:
+  ```bash
+  # Toggle promisc:
+  sudo ip link set [INTERFACE] promisc on
+  # Or, if on:
+  sudo ip link set [INTERFACE] promisc off
+  ```
+</details>
+
+<details>
+<summary>gpssl</summary>
+
+  ### Alias:
+  ```bash
+  sudo gpclient --fix-openssl connect
+  ```
+</details>
+
+<details>
+  <summary>l</summary>
+
+  ### Alias:
+  ```bash
+  ls -alh
+  ```
+</details>
+
+<details>
+<summary>ll</summary>
+
+  ### Alias:
+  ```bash
+  ls -l
+  ```
+</details>
+
+<details>
+<summary>gs</summary>
+
+  ### Alias:
+  ```bash
+  git status
+  ```
 </details>
 
 ---

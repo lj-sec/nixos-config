@@ -11,5 +11,7 @@
     ./qt.nix
     # Catppuccin
     ./catppuccin.nix
+    # Any other session variables that may need to be set directly
+    ./variables.nix
   ];
 }
