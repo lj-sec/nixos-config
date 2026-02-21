@@ -1,48 +1,31 @@
 { pkgs, config, username, ... }:
 let
-    micmuteWpEvent = pkgs.writeShellScriptBin "micmute-wp-event" ''
-    #!${pkgs.bash}/bin/bash
-    set -uo pipefail   # no `-e` so transient failures don't kill the service
+  micmuteToggle = pkgs.writeShellScript "micmute-toggle" ''
+    set -euo pipefail
 
-    pactl_bin=${pkgs.pulseaudio}/bin/pactl
-    sudo_bin=/run/wrappers/bin/sudo
-    led_cmd="/run/current-system/sw/bin/micmute-led"
+    USER_NAME="${username}"
+    LED="/sys/class/leds/platform::micmute/brightness"
+    USER_ID="$(${pkgs.coreutils}/bin/id -u "$USER_NAME")"
 
-    wait_for_pulse() {
-      # Wait up to ~6s for the pulse server from PipeWire to be ready
-      for i in {1..30}; do
-        if "''${pactl_bin}" info >/dev/null 2>&1; then
-          return 0
-        fi
-        sleep 0.2
-      done
-      return 1
+    as_user() {
+      ${pkgs.util-linux}/bin/runuser -u "$USER_NAME" -- ${pkgs.coreutils}/bin/env \
+        XDG_RUNTIME_DIR="/run/user/$USER_ID" \
+        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$USER_ID/bus" \
+        "$@"
     }
 
-    update_led() {
-      # If there's no default source yet, just skip
-      if "''${pactl_bin}" get-source-mute @DEFAULT_SOURCE@ >/dev/null 2>&1; then
-        if "''${pactl_bin}" get-source-mute @DEFAULT_SOURCE@ 2>/dev/null | grep -q 'yes'; then
-          "''${sudo_bin}" "''${led_cmd}" 1 || true
-        else
-          "''${sudo_bin}" "''${led_cmd}" 0 || true
-        fi
-      fi
-    }
+    # Toggle mic mute
+    as_user ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
-    # Wait for pulse, do an initial sync (both tolerant of failure)
-    wait_for_pulse || true
-    update_led || true
+    # Sync LED to actual mute state
+    if as_user ${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ \
+      | ${pkgs.gnugrep}/bin/grep -q '\[MUTED\]'; then
+      echo 1 > "$LED"
+    else
+      echo 0 > "$LED"
+    fi
 
-    # Subscribe to pulse events and update on relevant changes
-    "''${pactl_bin}" subscribe | while read -r line; do
-      case "''${line}" in
-        *"Event 'change' on source"*) update_led ;;
-        *"Event 'new' on source"*)    update_led ;;
-        *"Event 'change' on server"*) update_led ;;
-        *"Event 'new' on server"*)    update_led ;;
-      esac
-    done
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
   '';
 in
 {
@@ -52,46 +35,41 @@ in
     ./../../modules/core
   ];
 
-  boot.kernelModules = [ "thinkpad_acpi" ];
+  services.acpid = {
+    enable = true;
+    logEvents = true;
 
-  # Workaround to write to micmute LED without sudo
-  security.sudo.extraRules = [
-    {
-      users = [ username ]; 
-      commands = [
-        {
-          command = "/run/current-system/sw/bin/micmute-led";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-  systemd.user.services."micmute-sync" = {
-    description = "Sync ThinkPad micmute LED with mic mute (event-driven via pactl subscribe)";
-    # Make sure PipeWire pulse server & WirePlumber are up first
-    after = [ "pipewire-pulse.service" "wireplumber.service" ];
-    wants = [ "pipewire-pulse.service" "wireplumber.service" ];
-    wantedBy = [ "default.target" ];
-    serviceConfig = {
-      ExecStart = "${micmuteWpEvent}/bin/micmute-wp-event";
-      Restart = "always";
-      RestartSec = 1;
-      # Useful to see script stderr in the journal
-      StandardError = "journal";
+    handlers.micmute = {
+      event = "button/micmute.*";
+      action = "${micmuteToggle} && tee";
     };
   };
 
-  # Expose all Fn hotkeys
-  boot.extraModprobeConfig = ''
-    options thinkpad_acpi hotkey=enable,0xffff hotkey_report_mode=2
-  '';
+  # Rebinding Copilot key
+  services.keyd = {
+    enable = true;
+    keyboards = {
+      default = {
+        ## the id of your keyboard taken from the monitor command - specifying it here and not using a wildcard * might avoid the aforementioned libinput issue with palm rejection.  
+        ids = [ "0001:0001:09b4e68d" ];
+        settings = {
+          main = {
+            ## taking the key combination from the monitor command and remapping it to meta / super key
+            "leftshift+leftmeta+f23" = "layer(meta)";
+          };
+        };
+      };
+    };
+  };
+
+  users.groups.micled = {};
+  users.users.${username}.extraGroups = [ "micled" ];
+
+  systemd.tmpfiles.rules = [
+    "z /sys/class/leds/platform::micmute/brightness 0664 root micled - -"
+  ];
 
   environment.systemPackages = with pkgs; [
-    (writeShellScriptBin "micmute-led" ''
-      #!/usr/bin/env bash
-      # Usage: micmute-led 0|1
-      echo "$1" > /sys/class/leds/platform::micmute/brightness
-    '')
     acpi
     brightnessctl
     cpupower-gui

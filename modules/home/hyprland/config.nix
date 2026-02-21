@@ -241,9 +241,6 @@ in
           ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
           ",XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SINK@ toggle"
 
-          # Mic mute (the LED sync picks this up)
-          "$mainMod, M,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SOURCE@ toggle"
-
           # Brightness
           ",XF86MonBrightnessUp,exec,${pkgs.brightnessctl}/bin/brightnessctl set +5%"
           ",XF86MonBrightnessDown,exec,${pkgs.brightnessctl}/bin/brightnessctl set 5%-"

@@ -71,6 +71,66 @@ let
 
     exec cava -p "$config_file" | sed -u "$dict"
   '';
+
+  micStatus = pkgs.writeShellScript "waybar-mic-status" ''
+    set -euo pipefail
+
+    OUT="$(${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null || true)"
+
+    if [ -z "$OUT" ]; then
+      printf '{"text":" N/A","tooltip":"No default microphone","class":"missing"}\n'
+      exit 0
+    fi
+
+    # Expected format: "Volume: 0.42 [MUTED]" or "Volume: 0.42"
+    VOL_RAW="$(printf '%s\n' "$OUT" | ${pkgs.gawk}/bin/awk '{print $2}')"
+    VOL_PCT="$(printf '%s\n' "$VOL_RAW" | ${pkgs.gawk}/bin/awk '{printf "%d", $1 * 100}')"
+
+    if printf '%s\n' "$OUT" | ${pkgs.gnugrep}/bin/grep -q '\[MUTED\]'; then
+      printf '{"text":"</span> %s%%","tooltip":"Microphone muted","class":"muted"}\n' "$VOL_PCT"
+    else
+      printf '{"text":"</span> %s%%","tooltip":"Microphone active","class":"unmuted"}\n' "$VOL_PCT"
+    fi
+  '';
+
+  micRefresh = pkgs.writeShellScript "waybar-mic-refresh" ''
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
+  '';
+
+  micToggleUser = pkgs.writeShellScript "waybar-mic-toggle-user" ''
+    set -euo pipefail
+
+    LED="/sys/class/leds/platform::micmute/brightness"
+
+    ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+
+    if ${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ \
+      | ${pkgs.gnugrep}/bin/grep -q '\[MUTED\]'; then
+      printf 1 > "$LED"
+    else
+      printf 0 > "$LED"
+    fi
+
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
+  '';
+
+  micVolUp = pkgs.writeShellScript "waybar-mic-vol-up" ''
+    set -euo pipefail
+    ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 2%+ --limit 1.0
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
+  '';
+
+  micVolDown = pkgs.writeShellScript "waybar-mic-vol-down" ''
+    set -euo pipefail
+    ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 2%- --limit 1.0
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
+  '';
+
+  micVolReset = pkgs.writeShellScript "waybar-mic-vol-reset" ''
+    set -euo pipefail
+    ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 100% --limit 1.0
+    ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true
+  '';
 in
 {
   programs.waybar = {
@@ -270,38 +330,17 @@ in
 
       "custom/mic" = {
         return-type = "json";
+        exec = "${micStatus}";
         interval = 1;
+        signal = 5;
         tooltip = true;
         markup = true;
-        signal = 5;
-        exec = ''
-          bash <<'BASH'
-s=$(wpctl get-volume @DEFAULT_SOURCE@ 2>/dev/null || true)
-
-if printf "%s" "$s" | grep -q MUTED; then
-  icon=""; status="muted"
-else
-  icon=""; status="live"
-fi
-
-num=$(printf "%s" "$s" | grep -Eo '[0-9]+\.[0-9]+' | head -n1)
-if [ -n "$num" ]; then
-  vol=$(awk -v n="$num" 'BEGIN{printf("%d", n*100 + 0.5)}')
-else
-  vol="--"
-fi
-
-icon_markup="<span foreground='${blue}'>$icon</span>"
-printf '{"text":"%s %s%%","tooltip":"Mic %s (%s)","class":"%s"}\n' \
-  "$icon_markup" "$vol" "$status" "$vol%" "$status"
-BASH
-        '';
-        format = "<span foreground='${blue}'>[ </span>{text} ";
-        on-click = "wpctl set-mute @DEFAULT_SOURCE@ toggle; killall -RTMIN+5 waybar";
+        format = "<span foreground='${blue}'>[ {text} ";
+        on-click = "${micToggleUser}";
         on-click-right = "hyprctl dispatch exec '[float; center; size 950 650] pavucontrol'";
-        on-scroll-up = "wpctl set-volume @DEFAULT_SOURCE@ 2%+ --limit 1.0; killall -RTMIN+5 waybar";
-        on-scroll-down = "wpctl set-volume @DEFAULT_SOURCE@ 2%- --limit 1.0; killall -RTMIN+5 waybar";
-        on-click-middle = "wpctl set-volume @DEFAULT_SOURCE@ 100% --limit 1.0; killall -RTMIN+5 waybar";
+        on-scroll-up = "${micVolUp}";
+        on-scroll-down = "${micVolDown}";
+        on-click-middle = "${micVolReset}";
       };
 
       battery = {

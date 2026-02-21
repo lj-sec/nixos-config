@@ -3,7 +3,7 @@
 let
   fontName   = "0xProto Nerd Font";
   fontSize   = 10;
-  cursorSize = 12;
+  cursorSize = 16;
 
   flavor = "mocha";
   accent = "lavender";
@@ -33,6 +33,13 @@ in
   };
 
   home.sessionVariables = {
+    XCURSOR_THEME = cursorName;
+    XCURSOR_SIZE  = toString cursorSize;
+    HYPRCURSOR_THEME = cursorName;
+    HYPRCURSOR_SIZE  = toString cursorSize;
+  };
+
+  systemd.user.sessionVariables = {
     XCURSOR_THEME = cursorName;
     XCURSOR_SIZE  = toString cursorSize;
     HYPRCURSOR_THEME = cursorName;
