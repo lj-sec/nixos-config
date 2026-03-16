@@ -15,7 +15,7 @@
     extraPackages = with pkgs; [
       vulkan-tools          # vulkaninfo
       mesa-demos            # glxinfo, glxgears
-      vaapiVdpau            # VA-API → VDPAU bridge
+      libva-vdpau-driver    # VA-API → VDPAU bridge
       libvdpau-va-gl        # VDPAU over VA-API
       # rocm-opencl-icd     # uncomment if you want OpenCL
       # amdvlk              # optional; Mesa’s RADV is default and usually better

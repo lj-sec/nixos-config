@@ -52,7 +52,6 @@
     util-linux
     ## Languages
     powershell
-    terraform
     tflint
     ## Compression
     unzip
@@ -130,5 +129,13 @@
     ## Post
     # dbd
     netcat
+
+    # Terraform and Ansible management
+    terraform
+    ansible
+    python3Packages.pypsrp
+    python3Packages.pywinrm
+    krb5
+    ansible-lint
   ];
 }

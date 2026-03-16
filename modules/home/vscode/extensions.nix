@@ -19,6 +19,13 @@ in
       pkgs.vscode-extensions.jnoortheen.nix-ide
       pkgs.vscode-extensions.catppuccin.catppuccin-vsc
       pkgs.vscode-extensions.catppuccin.catppuccin-vsc-icons
+      pkgs.vscode-extensions.redhat.ansible
+      pkgs.vscode-extensions.redhat.vscode-yaml
+      pkgs.vscode-extensions.ms-python.python
+      pkgs.vscode-extensions.ms-python.debugpy
+      pkgs.vscode-extensions.ms-python.pylint
+      pkgs.vscode-extensions.ms-python.vscode-pylance
+      pkgs.vscode-extensions.vscodevim.vim
       terraformFixed
     ];
   };

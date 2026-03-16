@@ -39,6 +39,8 @@
     ./wlogout.nix
     # Discord client
     ./vesktop.nix
+    # Mail client
+    ./thunderbird.nix
     # All other packages with no config
     ./packages.nix
   ];

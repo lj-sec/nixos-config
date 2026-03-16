@@ -41,6 +41,7 @@ in
       l  = "ls -alh";
       ll = "ls -l";
       gs = "git status";
+      gc = "sudo nix-collect-garbage -d";
       gpssl = "sudo gpclient --fix-openssl connect";
     };
 
