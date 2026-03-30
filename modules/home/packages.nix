@@ -30,6 +30,8 @@
     # CLI Tools
     #
     ## Utils
+    wev
+    keyd
     nix-search
     coreutils
     inetutils
@@ -60,7 +62,6 @@
     ## Network
     openvpn
     wireguard-tools
-    proxychains-ng
     ## Goofy
     cava
     sl                # choo-choo

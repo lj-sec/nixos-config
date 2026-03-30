@@ -50,12 +50,10 @@ in
     enable = true;
     keyboards = {
       default = {
-        ## the id of your keyboard taken from the monitor command - specifying it here and not using a wildcard * might avoid the aforementioned libinput issue with palm rejection.  
         ids = [ "0001:0001:09b4e68d" ];
         settings = {
           main = {
-            ## taking the key combination from the monitor command and remapping it to meta / super key
-            "leftshift+leftmeta+f23" = "layer(meta)";
+            "leftshift+leftmeta+f23" = "f24";
           };
         };
       };
@@ -75,5 +73,6 @@ in
     cpupower-gui
     linuxPackages.cpupower
     powertop
+    ntfs3g
   ];
 }

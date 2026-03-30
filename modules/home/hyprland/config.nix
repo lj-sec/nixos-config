@@ -1,4 +1,4 @@
-{ config, pkgs, lib, host, ... }:
+{ config, pkgs, lib, host, username, ... }:
 let
   p = config.colorScheme.palette;
   browser = "brave";
@@ -215,6 +215,9 @@ in
           # Mousewheel workspace nav
           "$mainMod, mouse_down, workspace, e-1"
           "$mainMod, mouse_up, workspace, e+1"
+
+          # Teehee
+          ",code:202,exec,${pkgs.mpv}/bin/mpv /home/${username}/Documents/repos/nixos-config/wallpapers/rickroll-roll.mp4"
         ];
 
         bindm = [
@@ -225,6 +228,7 @@ in
         windowrule = [
           "match:title ^(Picture-in-Picture)$, float 1, pin 1"
           "match:class ^(sticky\\.py)$, float 1, size 200 200"
+          "match:class ^(mpv)$, opacity 1.0 override 1.0 override 1.0 override"
         ];
         
         monitor = [ "eDP-1,preferred,auto,1" ",preferred,auto,1" ];

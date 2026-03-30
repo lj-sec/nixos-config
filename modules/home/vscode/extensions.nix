@@ -25,7 +25,6 @@ in
       pkgs.vscode-extensions.ms-python.debugpy
       pkgs.vscode-extensions.ms-python.pylint
       pkgs.vscode-extensions.ms-python.vscode-pylance
-      pkgs.vscode-extensions.vscodevim.vim
       terraformFixed
     ];
   };
