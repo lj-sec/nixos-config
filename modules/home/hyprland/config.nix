@@ -12,10 +12,10 @@ in
     text = ''
       #!/usr/bin/env bash
       set -euo pipefail
-      hyprlock                     # blocks until unlocked
-      waybar &                     # start the rest after unlock
+      hyprlock
+      waybar &
       swaync &
-      swww-daemon &
+      awww-daemon &
       wl-clip-persist --clipboard both &
     '';
   };
@@ -67,8 +67,8 @@ in
           special_scale_factor = 1.0;
           split_width_multiplier = 1.0;
           use_active_for_splits = true;
-          pseudotile = "yes";
           preserve_split = "no";
+          # pseudotile = "yes";
         };
 
         master = {
@@ -217,7 +217,7 @@ in
           "$mainMod, mouse_up, workspace, e+1"
 
           # Teehee
-          ",code:202,exec,${pkgs.mpv}/bin/mpv /home/${username}/Documents/repos/nixos-config/wallpapers/rickroll-roll.mp4"
+          ",code:202,exec,${pkgs.mpv}/bin/mpv --keep-open=no /home/${username}/Documents/repos/nixos-config/wallpapers/rickroll-roll.mp4"
         ];
 
         bindm = [
@@ -229,6 +229,7 @@ in
           "match:title ^(Picture-in-Picture)$, float 1, pin 1"
           "match:class ^(sticky\\.py)$, float 1, size 200 200"
           "match:class ^(mpv)$, opacity 1.0 override 1.0 override 1.0 override"
+          "match:class ^(imv\\)$, opacity 1.0 override 1.0 override 1.0 override"
         ];
         
         monitor = [ "eDP-1,preferred,auto,1" ",preferred,auto,1" ];
@@ -251,5 +252,11 @@ in
         ];
       })
     ];
+  };
+  programs.mpv = {
+    enable = true;
+    config = {
+      "keep-open" = "yes";
+    };
   };
 }

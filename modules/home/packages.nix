@@ -16,6 +16,8 @@
     ## Calculator
     rink
     ## Media
+    losslesscut-bin   # Video cutter
+    handbrake         # Video converter
     gimp              # Image editor
     mpv               # Video player
     imv               # Image player
@@ -62,7 +64,8 @@
     ## Network
     openvpn
     wireguard-tools
-    ## Goofy
+    ## 
+    benhsm-minesweeper
     cava
     sl                # choo-choo
     pay-respects      # f

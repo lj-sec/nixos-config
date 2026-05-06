@@ -41,6 +41,8 @@
     ./vesktop.nix
     # Mail client
     ./thunderbird.nix
+    # XDG-Mime
+    ./xdg.nix
     # All other packages with no config
     ./packages.nix
   ];

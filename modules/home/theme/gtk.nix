@@ -49,6 +49,10 @@ in
   gtk = lib.mkForce {
     enable = true;
 
+    gtk4 = {
+      theme = null;
+    };
+
     font = {
       name = fontName;
       size = fontSize;

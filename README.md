@@ -134,6 +134,26 @@ nixos-config/
 </details>
 
 <details>
+<summary>split_dir</summary>
+
+  ### Usage:
+  ```bash
+    split_dir <SRC> <OUTDIR> <MULT><SIZE>"
+  ```
+
+  ### Output:
+  Splits the SRC directory into OUTDIR into directories that are of <MULT><SIZE> or smaller where <MULT> is how many of <SIZE> bytes.
+
+  ### Examples:
+  ```bash
+  split_dir ./data/ ./output/       # Default splits into equal chunks
+  split_dir ./data/ ./output/ 50MB  # 50MB even dirs
+  split_dir ./data/ ./output/ 1.5GB # 1.5GB even dirs
+  ```
+
+</details>
+
+<details>
 <summary>gpssl</summary>
 
   ### Alias:
@@ -175,7 +195,7 @@ nixos-config/
 
 This setup was built mostly on and for a Lenovo ThinkPad T14 Gen5 (AMD) 21MC, and some bugs are still being resolved.
 Some quirks of note that have been run into:
- - This keyboard's micmute button and LED have been impossible to configure, as it is not throwing XF86AudioMicMute when pressed as it should. In this repo I have created a script and a service that hooks into wireplumber and pipewire to ensure the accuracy of the LED via writing directly to `/sys/class/leds/platform::micmute/brightness` and the waybar custom-mic module. For now, I have also bound SUPER + M to toggle the microphone.
+ - This keyboard's micmute button and LED have been flaky to configure, as it is not throwing XF86AudioMicMute when pressed as it should. In this repo I have created a script and a service located in `./hosts/t14g5-nixos/default.nix` to ensure the accuracy of the LED via writing directly to `/sys/class/leds/platform::micmute/brightness` and the waybar custom-mic module.
  - The Steam games that have been tested on the ThinkPad (i.e. Noita, Balatro) have only launched when forced to use the GE-Proton Compatibility tool. When using GE-Proton, no issues.
 
 ---
@@ -286,13 +306,23 @@ sudo nixos-rebuild switch --flake .#<your-host>
 
 ## Shoutout
 
-A lot of my inspiration (and some configs) came from [Frost-Phoenix’s nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main).
+A lot of inspiration (and some configs) came from [Frost-Phoenix’s nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main).
 
 ---
 
-## Background Credit
+---
 
-Most wallpapers in the `./wallpapers/` directory were sourced from [WallpaperAccess](https://wallpaperaccess.com/).  
+## To Do
+
+
+
+---
+
+## Wallpapers
+
+Wallpapers in the `./wallpapers/` directory were sourced from multiple sites across the internet, this is simply a small collection.
 I do not claim ownership of any these images. All rights belong to their respective creators.
 
 If you are the copyright holder of one of these wallpapers and would like it removed or credited differently, please contact me.
+
+The default wallpapers directory that waypaper searches is `/home/${username}/Pictures/wallpapers` and can be changed in `./modules/home/waypaper.nix`.

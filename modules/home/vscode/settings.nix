@@ -1,6 +1,6 @@
 { ... }:
 {
-  programs.vscode.profiles.default = {
+  programs.vscodium.profiles.default = {
     userSettings = {
       "update.mode" = "none";
       "extensions.autoUpdate" = false;

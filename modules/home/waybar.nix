@@ -170,7 +170,7 @@ in
       }
 
       #workspaces button {
-        color: ${yellow};
+        color: ${blue};
         background: transparent;
         padding: 0 6px;
         margin: 0 4px 0 0;
@@ -181,7 +181,7 @@ in
         opacity: 0.7;
       }
       #workspaces button.active {
-        color: ${orange};
+        color: ${magenta};
       }
 
       #custom-cava {

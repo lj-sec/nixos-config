@@ -1,6 +1,8 @@
 { ... }:
 {
   imports = [
+    # Reading phone storage
+    ./phones.nix
     # Printing + Avahi discovery
     ./printing.nix
     # Time sync and zone
@@ -9,6 +11,8 @@
     ./firewall.nix
     # SSH configuration
     ./ssh.nix
+    # Flatpaks
+    ./flatpak.nix
     # Garbage collection, btrfs
     ./maintenance.nix
     # Blueman configuration

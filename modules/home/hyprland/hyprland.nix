@@ -1,7 +1,7 @@
 { config, pkgs, inputs, ... }:
 {
   home.packages = with pkgs; [
-    swww
+    awww
     inputs.hypr-contrib.packages.${pkgs.stdenv.hostPlatform.system}.grimblast
     inputs.hyprpicker.packages.${pkgs.stdenv.hostPlatform.system}.hyprpicker
     wf-recorder
@@ -17,6 +17,7 @@
   ];
   
   xdg.userDirs.enable = true;
+  xdg.userDirs.setSessionVariables = false;
 
   wayland.windowManager.hyprland = {
     enable = true; 

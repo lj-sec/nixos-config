@@ -14,7 +14,7 @@ let
     });
 in
 {
-  programs.vscode.profiles.default = lib.mkForce {
+  programs.vscodium.profiles.default = lib.mkForce {
     extensions = [
       pkgs.vscode-extensions.jnoortheen.nix-ide
       pkgs.vscode-extensions.catppuccin.catppuccin-vsc

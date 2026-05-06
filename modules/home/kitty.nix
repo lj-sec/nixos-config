@@ -2,7 +2,7 @@
 let
   p = config.colorScheme.palette;
   custom = {
-    font = "Maple Mono";
+    font = "0xProto Nerd Font Mono";
     font_size    = 10;
     font_weight  = "Bold";
     text_color   = "#${p.base05}";
@@ -49,6 +49,7 @@ in
       background_opacity = "${opacity}";
       dynamic_background_opacity = "yes";
 
+      font_family = font;
       font_size = font_size;
 
       confirm_os_window_close = 0;
