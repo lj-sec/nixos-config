@@ -4,6 +4,7 @@ let
     services.dbus.enable = true;
     security.polkit.enable = true;
     services.fwupd.enable = true;
+    services.seatd.enable = true;
     
     services.udev.extraRules = ''
       ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="Video Bus*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
