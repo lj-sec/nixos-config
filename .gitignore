@@ -7,3 +7,10 @@ result-*
 
 # Ignore obsidian directory
 .obsidian
+
+# Ignore syncthing
+.syncthing*.tmp
+*.sync-conflict-*
+.stfolder
+.stignore
+.stversions/

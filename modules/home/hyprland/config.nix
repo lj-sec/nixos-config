@@ -39,7 +39,14 @@ in
             natural_scroll = true;
           };
         };
-
+        
+        device = [
+	  {
+	    name = "video-bus";
+	    enabled = false;
+	  }
+	];
+        
         general = {
           layout = "dwindle";
           gaps_in = 3;

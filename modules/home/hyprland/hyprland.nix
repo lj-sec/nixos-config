@@ -12,10 +12,6 @@
     waybar-lyric
   ];
 
-  systemd.user.targets.hyprland-session.Unit.Wants = [
-    "xdg-desktop-autostart.target"
-  ];
-  
   xdg.userDirs.enable = true;
   xdg.userDirs.setSessionVariables = false;
 
@@ -26,9 +22,6 @@
       enable = true;
     };
 
-    systemd = {
-      enable = true;
-      variables = ["--all"];
-    };
+    systemd.enable = false;
   };
 }
