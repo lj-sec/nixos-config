@@ -39,14 +39,14 @@ in
             natural_scroll = true;
           };
         };
-        
+
         device = [
-	  {
-	    name = "video-bus";
-	    enabled = false;
-	  }
-	];
-        
+          {
+            name = "video-bus";
+            enabled = false;
+          }
+        ];
+
         general = {
           layout = "dwindle";
           gaps_in = 3;
@@ -128,7 +128,7 @@ in
             "windowsMove, 1, 2, fluent_decel, slide"
 
             # Fade
-            "fadeIn, 1, 3, fade_curve" 
+            "fadeIn, 1, 3, fade_curve"
             "fadeOut, 1, 3, fade_curve"
 
             # Workspaces
@@ -198,7 +198,7 @@ in
           "$mainMod CTRL, l, resizeactive, 80 0"
 
           # Workspaces (1-10)
-          "$mainMod, 1, workspace, 1" 
+          "$mainMod, 1, workspace, 1"
           "$mainMod, 2, workspace, 2"
           "$mainMod, 3, workspace, 3"
           "$mainMod, 4, workspace, 4"
@@ -211,12 +211,12 @@ in
           "$mainMod SHIFT, 1, movetoworkspacesilent, 1"
           "$mainMod SHIFT, 2, movetoworkspacesilent, 2"
           "$mainMod SHIFT, 3, movetoworkspacesilent, 3"
-          "$mainMod SHIFT, 4, movetoworkspacesilent, 4" 
-          "$mainMod SHIFT, 5, movetoworkspacesilent, 5" 
-          "$mainMod SHIFT, 6, movetoworkspacesilent, 6" 
-          "$mainMod SHIFT, 7, movetoworkspacesilent, 7" 
-          "$mainMod SHIFT, 8, movetoworkspacesilent, 8" 
-          "$mainMod SHIFT, 9, movetoworkspacesilent, 9" 
+          "$mainMod SHIFT, 4, movetoworkspacesilent, 4"
+          "$mainMod SHIFT, 5, movetoworkspacesilent, 5"
+          "$mainMod SHIFT, 6, movetoworkspacesilent, 6"
+          "$mainMod SHIFT, 7, movetoworkspacesilent, 7"
+          "$mainMod SHIFT, 8, movetoworkspacesilent, 8"
+          "$mainMod SHIFT, 9, movetoworkspacesilent, 9"
           "$mainMod SHIFT, 0, movetoworkspacesilent, 10"
 
           # Mousewheel workspace nav
@@ -236,9 +236,9 @@ in
           "match:title ^(Picture-in-Picture)$, float 1, pin 1"
           "match:class ^(sticky\\.py)$, float 1, size 200 200"
           "match:class ^(mpv)$, opacity 1.0 override 1.0 override 1.0 override"
-          "match:class ^(imv\\)$, opacity 1.0 override 1.0 override 1.0 override"
+          "match:class ^(imv)$, opacity 1.0 override 1.0 override 1.0 override"
         ];
-        
+
         monitor = [ "eDP-1,preferred,auto,1" ",preferred,auto,1" ];
 
         xwayland = {
