@@ -44,13 +44,6 @@ in
           };
         };
 
-        device = [
-          {
-            name = "video-bus";
-            enabled = false;
-          }
-        ];
-
         general = {
           layout = "dwindle";
           gaps_in = 3;
