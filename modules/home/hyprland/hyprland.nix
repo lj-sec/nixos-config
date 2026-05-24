@@ -1,4 +1,12 @@
 { config, pkgs, inputs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  hyprlandPackage = inputs.hyprland.packages.${system}.default.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./../../core/patches/hyprland-device-config-null-guard.patch
+    ];
+  });
+in
 {
   home.packages = with pkgs; [
     awww
@@ -16,8 +24,9 @@
   xdg.userDirs.setSessionVariables = false;
 
   wayland.windowManager.hyprland = {
-    enable = true; 
-  
+    enable = true;
+    package = hyprlandPackage;
+
     xwayland = {
       enable = true;
     };

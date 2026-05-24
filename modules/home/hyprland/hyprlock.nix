@@ -1,7 +1,8 @@
 { config, inputs, pkgs, host, hasFingerprint, lib, ... }:
 let
   p = config.colorScheme.palette;
-  withA = hex: aa: "#${hex}${aa}";
+  rgb = hex: "rgb(${hex})";
+  withA = hex: aa: "rgba(${hex}${aa})";
   font = "0xProto Nerd Font";
   authCfg =
     if hasFingerprint then {
@@ -46,7 +47,7 @@ in
         # Avoid trailing newlines from cmd[] labels
         text_trim = true;
       };
-      
+
       auth = authCfg;
 
       background = [
@@ -65,7 +66,7 @@ in
         {
           monitor = "";
           text = " $TIME";
-          color = "#${p.base05}";
+          color = rgb p.base05;
           font_size = 115;
           font_family = font;
           shadow_passes = 3;
@@ -78,7 +79,7 @@ in
         {
           monitor = "";
           text = ''cmd[update:60000] echo "- $(date +'%A, %B %d') -" '';
-          color = "#${p.base04}";
+          color = rgb p.base04;
           font_size = 18;
           font_family = font;
           position = "250, -150";
@@ -90,7 +91,7 @@ in
         {
           monitor = "";
           text = "$USER";
-          color = "#${p.base06}";
+          color = rgb p.base06;
           font_size = 15;
           font_family = font;
           position = "0, 145";
@@ -108,10 +109,8 @@ in
 
           outer_color = withA p.base01 "33";
           inner_color = withA p.base01 "33";
-          font_color = "#${p.base05}";
-          fail_color = "#${p.base08}";
-
-          font_size = 11;
+          font_color = rgb p.base05;
+          fail_color = rgb p.base08;
           font_family = font;
 
           hide_input = false;

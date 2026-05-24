@@ -1,16 +1,24 @@
 { inputs, pkgs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  hyprlandPackage = inputs.hyprland.packages.${system}.default.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./patches/hyprland-device-config-null-guard.patch
+    ];
+  });
+in
 {
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = hyprlandPackage;
     withUWSM = true;
-    portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    portalPackage = inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
   };
 
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = false;
-    
+
     extraPortals = [
       pkgs.xdg-desktop-portal-gtk
     ];
