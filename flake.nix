@@ -40,7 +40,8 @@
 
   outputs = { self, nixpkgs, ... }@inputs:
   let
-    username = "curse";
+    usernameFromEnv = builtins.getEnv "NIXOS_CONFIG_USERNAME";
+    username = if usernameFromEnv != "" then usernameFromEnv else "curse";
     system = "x86_64-linux";
 
     pkgs = import nixpkgs {

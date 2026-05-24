@@ -9,6 +9,7 @@
     description = "Shadowsocks local client";
     after = [ "network-online.target" ];
     wantedBy = [ "default.target" ];
+    unitConfig.ConditionPathExists = "%h/.config/shadowsocks-rust/config.json";
     serviceConfig = {
       ExecStart = "${pkgs.shadowsocks-rust}/bin/sslocal -c %h/.config/shadowsocks-rust/config.json";
       Restart = "on-failure";

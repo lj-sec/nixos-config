@@ -41,7 +41,7 @@ in
 
     handlers.micmute = {
       event = "button/micmute.*";
-      action = "${micmuteToggle} && tee";
+      action = "${micmuteToggle}";
     };
   };
 

@@ -102,13 +102,19 @@ let
 
     LED="/sys/class/leds/platform::micmute/brightness"
 
+    write_led() {
+      if [ -w "$LED" ]; then
+        printf '%s' "$1" > "$LED"
+      fi
+    }
+
     ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
     if ${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ \
       | ${pkgs.gnugrep}/bin/grep -q '\[MUTED\]'; then
-      printf 1 > "$LED"
+      write_led 1
     else
-      printf 0 > "$LED"
+      write_led 0
     fi
 
     ${pkgs.procps}/bin/pkill -RTMIN+5 waybar || true

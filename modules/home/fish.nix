@@ -247,7 +247,7 @@ in
       passcp = {
         description = "passcp [ACCOUNT]";
         body = ''
-          if test (command -v pass) != null
+          if command -q pass
             set -l account ""
             if test (count $argv) -eq 1
               pass show $argv[1] | wl-copy
@@ -277,8 +277,10 @@ in
             set host $argv[3]
           end
 
-          echo "sudo nixos-rebuild $action --flake $flake#$host"
-          sudo nixos-rebuild $action --flake $flake#$host
+          set -l flake_ref "$flake#$host"
+
+          echo "sudo nixos-rebuild $action --flake $flake_ref"
+          sudo nixos-rebuild $action --flake "$flake_ref"
         '';
       };
     };

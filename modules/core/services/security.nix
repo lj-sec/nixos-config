@@ -3,7 +3,6 @@ let
   base = {
     services.dbus.enable = true;
     security.polkit.enable = true;
-    services.fwupd.enable = true;
     services.seatd.enable = true;
     
     services.udev.extraRules = ''

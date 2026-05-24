@@ -20,7 +20,7 @@
 
   users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "wireshark" "disk" "seat" ];
+    extraGroups = [ "wheel" "networkmanager" "wireshark" "seat" ];
   };
   nix.settings.allowed-users = [ "${username}" ];
 

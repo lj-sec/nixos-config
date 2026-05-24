@@ -12,11 +12,11 @@ in
     text = ''
       #!/usr/bin/env bash
       set -euo pipefail
-      hyprlock
       waybar &
       swaync &
       awww-daemon &
       wl-clip-persist --clipboard both &
+      hyprlock || true
     '';
   };
 
@@ -26,7 +26,7 @@ in
         "$mainMod" = "SUPER";
 
         debug = {
-          disable_logs = false;
+          disable_logs = true;
         };
 
         exec-once = [
@@ -221,7 +221,7 @@ in
           "$mainMod, mouse_up, workspace, e+1"
 
           # Teehee
-          ",code:202,exec,${pkgs.mpv}/bin/mpv --keep-open=no /home/${username}/Documents/repos/nixos-config/wallpapers/rickroll-roll.mp4"
+          ",code:202,exec,${pkgs.mpv}/bin/mpv --keep-open=no ${../../../wallpapers/rickroll-roll.mp4}"
         ];
 
         bindm = [

@@ -32,6 +32,7 @@
     # CLI Tools
     #
     ## Utils
+    codex
     wev
     keyd
     nix-search

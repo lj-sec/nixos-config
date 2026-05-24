@@ -93,7 +93,7 @@ fi
 # Install
 echo "${info}Starting system build."
 echo "${info}This could take a while..."
-sudo nixos-rebuild switch --flake ".#${host}"
+sudo env NIXOS_CONFIG_USERNAME="$username" nixos-rebuild switch --impure --flake ".#${host}"
 
 echo "${ok}Done!"
 

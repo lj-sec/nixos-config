@@ -1,9 +1,17 @@
 { config, pkgs, lib, ... }:
 let
+  aptPackagesHash = builtins.hashFile "sha256" ./apt-packages.txt;
   ensureKali = pkgs.writeShellScript "ensure-kali-distrobox" ''
     set -euo pipefail
 
     log() { echo "[kali-distrobox-ensure] $*"; }
+    stamp_dir="$HOME/.local/state/distrobox"
+    stamp_file="$stamp_dir/kali-bootstrap-${aptPackagesHash}.stamp"
+
+    mark_bootstrapped() {
+      ${pkgs.coreutils}/bin/mkdir -p "$stamp_dir"
+      ${pkgs.coreutils}/bin/touch "$stamp_file"
+    }
 
     has_kali() {
       # Avoid brittle grep on table formatting
@@ -41,6 +49,7 @@ let
         recreate
         ${pkgs.distrobox}/bin/distrobox enter kali -- bash -lc "$HOME/.config/distrobox/kali/bootstrap.sh"
         log "Bootstrap complete after recreate."
+        mark_bootstrapped
         exit 0
       fi
 
@@ -49,6 +58,7 @@ let
     fi
 
     log "Bootstrap complete."
+    mark_bootstrapped
   '';
 in
 {
@@ -83,11 +93,17 @@ in
   # Print to the rebuild terminal, *then* start in the background.
   home.activation.kaliDistroboxBootstrap =
     lib.hm.dag.entryAfter [ "reloadSystemd" ] ''
-      echo "==> Queuing Kali distrobox bootstrap in the background"
-      echo "==> Follow: journalctl --user -fu kali-distrobox-ensure.service"
+      stamp="$HOME/.local/state/distrobox/kali-bootstrap-${aptPackagesHash}.stamp"
 
-      if ! ${pkgs.systemd}/bin/systemctl --user start --no-block kali-distrobox-ensure.service; then
-        echo "==> (kali-distrobox-ensure) failed to queue; check: systemctl --user status kali-distrobox-ensure.service"
+      if [ -e "$stamp" ]; then
+        echo "==> Kali distrobox bootstrap is current"
+      else
+        echo "==> Queuing Kali distrobox bootstrap in the background"
+        echo "==> Follow: journalctl --user -fu kali-distrobox-ensure.service"
+
+        if ! ${pkgs.systemd}/bin/systemctl --user start --no-block kali-distrobox-ensure.service; then
+          echo "==> (kali-distrobox-ensure) failed to queue; check: systemctl --user status kali-distrobox-ensure.service"
+        fi
       fi
     '';
 }
