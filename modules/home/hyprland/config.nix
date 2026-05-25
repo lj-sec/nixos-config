@@ -1,7 +1,9 @@
-{ config, pkgs, lib, host, username, ... }:
+{ config, pkgs, lib, host, username, installFeatures ? {}, ... }:
 let
   p = config.colorScheme.palette;
-  browser = "brave";
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
+  browser = if feature "brave" then "brave" else "firefox";
   terminal = "kitty";
   ssDir="${config.home.homeDirectory}/Pictures/Screenshots";
 in
@@ -141,7 +143,6 @@ in
         bind = [
           # Term
           "$mainMod, Return, exec, ${terminal}"
-          "$mainMod SHIFT, Return, exec, ${terminal} distrobox enter kali -- bash"
           
           # Browser
           "$mainMod, B, exec, ${browser}"
@@ -166,7 +167,6 @@ in
           
           # Apps
           "$mainMod, N, exec, sticky -n"
-          "$mainMod, V, exec, codium"
 
           # Make opaque
           "$mainMod, O, setprop, active opaque toggle"
@@ -220,7 +220,14 @@ in
           "$mainMod, mouse_down, workspace, e-1"
           "$mainMod, mouse_up, workspace, e+1"
 
-          # Teehee
+        ]
+        ++ lib.optionals (feature "kali") [
+          "$mainMod SHIFT, Return, exec, ${terminal} distrobox enter kali -- bash"
+        ]
+        ++ lib.optionals (feature "vscode") [
+          "$mainMod, V, exec, codium"
+        ]
+        ++ lib.optionals (feature "fun") [
           ",code:202,exec,${pkgs.mpv}/bin/mpv --keep-open=no ${../../../wallpapers/rickroll-roll.mp4}"
         ];
 
@@ -257,7 +264,7 @@ in
       })
     ];
   };
-  programs.mpv = {
+  programs.mpv = lib.mkIf ((feature "media") || (feature "fun")) {
     enable = true;
     config = {
       "keep-open" = "yes";

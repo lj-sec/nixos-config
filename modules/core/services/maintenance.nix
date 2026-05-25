@@ -1,10 +1,14 @@
-{ ... }:
+{ lib, installFeatures ? {}, ... }:
+let
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
+in
 {
   # Firmware updates
   services.fwupd.enable = true;
 
   # Btrfs: periodic scrub if you’re on Btrfs (comment out if not)
-  services.btrfs.autoScrub = {
+  services.btrfs.autoScrub = lib.mkIf (feature "btrfsScrub") {
     enable = true;
     interval = "weekly";
     fileSystems = [ "/" ];

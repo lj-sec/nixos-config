@@ -1,4 +1,8 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, installFeatures ? {}, ... }:
+let
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
+in
 {
   # Packages listed here have no configuration of their own as of now
   home.packages = with pkgs; [
@@ -15,15 +19,7 @@
     yazi              # For the CLI
     ## Calculator
     rink
-    ## Media
-    losslesscut-bin   # Video cutter
-    handbrake         # Video converter
-    gimp              # Image editor
-    mpv               # Video player
-    imv               # Image player
-    ffmpeg            # duh
-    inkscape          # PDF handler, mainly, but a LOT can be done w/
-    obs-studio        # Screen recording
+    ## Notes
     sticky            # Sticky Notes!
     ## Screenshots
     grim
@@ -38,7 +34,6 @@
     nix-search
     coreutils
     inetutils
-    filezilla
     ripgrep
     gnused
     gawk
@@ -55,47 +50,78 @@
     net-tools
     traceroute
     util-linux
-    ## Languages
-    powershell
-    tflint
     ## Compression
     unzip
     gnutar
     p7zip
-    ## Network
+  ]
+
+  ++ lib.optionals (feature "media") [
+    # Media and creative tools
+    #
+    ## Media
+    losslesscut-bin   # Video cutter
+    handbrake         # Video converter
+    gimp              # Image editor
+    mpv               # Video player
+    imv               # Image player
+    ffmpeg            # duh
+    inkscape          # PDF handler, mainly, but a LOT can be done w/
+    obs-studio        # Screen recording
+  ]
+
+  ++ lib.optionals (feature "remote") [
+    # Remote access, VPN, and imaging tools
+    #
+    filezilla
     openvpn
     wireguard-tools
-    ## 
+    remmina
+    rpi-imager
+  ]
+
+  ++ lib.optionals (feature "fun") [
+    # Fun and gaming-adjacent tools
+    #
     benhsm-minesweeper
-    cava
     sl                # choo-choo
     pay-respects      # f
     asciiquarium-transparent
     cowsay
     pipes
     lolcat
-    waybar-lyric
     prismlauncher
-    rpi-imager
+  ]
 
+  ++ lib.optionals (feature "music") [
+    # Music
+    #
+    cava
+    waybar-lyric
+    spotify
+  ]
+
+  ++ lib.optionals (feature "office") [
     # GUI Tools
     #
     ## Calendar
     gnome-calendar
     ## Markdown
     obsidian
-    ## Communication
-    signal-desktop
-    slack
-    ## Remote Management
-    remmina
     ## Office
     libreoffice-fresh
     hunspell          # For spellcheck
     hunspellDicts.en_US
-    # Music
-    spotify
+  ]
 
+  ++ lib.optionals (feature "communication") [
+    # Communication
+    #
+    signal-desktop
+    slack
+  ]
+
+  ++ lib.optionals (feature "security") [
     # Security
     #
     ## Recon
@@ -134,8 +160,13 @@
     ## Post
     # dbd
     netcat
+  ]
 
+  ++ lib.optionals (feature "devops") [
     # Terraform and Ansible management
+    #
+    powershell
+    tflint
     terraform
     ansible
     python3Packages.pypsrp

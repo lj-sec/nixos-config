@@ -1,23 +1,31 @@
-{ pkgs, lib, host, ... }:
-{
-  networking = {
-    hostName = host;
-    networkmanager.enable = true;
-  };
+{ pkgs, lib, host, installFeatures ? {}, ... }:
+let
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
+in
+lib.mkMerge [
+  {
+    networking = {
+      hostName = host;
+      networkmanager.enable = true;
+    };
 
-  services.tailscale = {
-    enable = true;
-    useRoutingFeatures = "client";
-  };
+    programs.dconf.enable = true;
+  }
 
-  environment.systemPackages = with pkgs; [
-    gpclient
-    glib-networking
-    gsettings-desktop-schemas
-    wireshark
-  ];
+  (lib.mkIf (feature "networkExtras") {
+    services.tailscale = {
+      enable = true;
+      useRoutingFeatures = "client";
+    };
 
-  programs.wireshark.enable = true;
+    environment.systemPackages = with pkgs; [
+      gpclient
+      glib-networking
+      gsettings-desktop-schemas
+      wireshark
+    ];
 
-  programs.dconf.enable = true;
-}
+    programs.wireshark.enable = true;
+  })
+]

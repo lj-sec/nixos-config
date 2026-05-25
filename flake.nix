@@ -40,15 +40,48 @@
 
   outputs = { self, nixpkgs, ... }@inputs:
   let
+    lib = nixpkgs.lib;
     usernameFromEnv = builtins.getEnv "NIXOS_CONFIG_USERNAME";
     username = if usernameFromEnv != "" then usernameFromEnv else "curse";
+    featuresFromEnv = builtins.getEnv "NIXOS_CONFIG_FEATURES";
+    selectedFeatures =
+      if featuresFromEnv == "" then null
+      else if featuresFromEnv == "__none__" then [ ]
+      else builtins.filter (feature: feature != "") (lib.splitString "," featuresFromEnv);
+    featureEnabled = feature:
+      selectedFeatures == null || builtins.elem feature selectedFeatures;
+    installFeatures = {
+      bluetooth = featureEnabled "bluetooth";
+      brave = featureEnabled "brave";
+      btrfsScrub = featureEnabled "btrfsScrub";
+      communication = featureEnabled "communication";
+      devops = featureEnabled "devops";
+      flatpak = featureEnabled "flatpak";
+      fun = featureEnabled "fun";
+      kali = featureEnabled "kali";
+      mail = featureEnabled "mail";
+      media = featureEnabled "media";
+      music = featureEnabled "music";
+      networkExtras = featureEnabled "networkExtras";
+      office = featureEnabled "office";
+      pass = featureEnabled "pass";
+      phones = featureEnabled "phones";
+      power = featureEnabled "power";
+      printing = featureEnabled "printing";
+      proxy = featureEnabled "proxy";
+      remote = featureEnabled "remote";
+      security = featureEnabled "security";
+      ssh = featureEnabled "ssh";
+      steam = featureEnabled "steam";
+      syncthing = featureEnabled "syncthing";
+      virtualization = featureEnabled "virtualization";
+      vscode = featureEnabled "vscode";
+    };
     system = "x86_64-linux";
 
     pkgs = import nixpkgs {
       inherit system;
     };
-
-    lib = nixpkgs.lib;
 
   in {
     nixosConfigurations = {
@@ -60,7 +93,7 @@
         specialArgs = {
           hasFingerprint = true;
           host = "t14g5-nixos";
-          inherit self inputs username;
+          inherit self inputs username installFeatures;
         };
       };
       omen30l-nixos = lib.nixosSystem {
@@ -71,7 +104,7 @@
         specialArgs = {
           hasFingerprint = false;
           host = "omen30l-nixos";
-          inherit self inputs username;
+          inherit self inputs username installFeatures;
         };
       };
       precision3640-nixos = lib.nixosSystem {
@@ -82,7 +115,7 @@
         specialArgs = {
           hasFingerprint = false;
           host = "precision3640-nixos";
-          inherit self inputs username;
+          inherit self inputs username installFeatures;
         };
       };
     };

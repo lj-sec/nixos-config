@@ -1,6 +1,8 @@
-{ pkgs, config, username, ... }:
+{ pkgs, config, lib, username, installFeatures ? {}, ... }:
 let
   p = config.colorScheme.palette;
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
   custom = {
     font = "0xProto Nerd Font";
     size_launcher = "20px";
@@ -245,6 +247,7 @@ in
         "clock"
         "tray"
         "custom/cava"
+      ] ++ lib.optionals (feature "music") [
         "custom/lyrics"
       ];
       modules-right = [

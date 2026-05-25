@@ -1,6 +1,8 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, lib, installFeatures ? {}, ... }:
 let
   system = pkgs.stdenv.hostPlatform.system;
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
   hyprlandPackage = inputs.hyprland.packages.${system}.default.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./../../core/patches/hyprland-device-config-null-guard.patch
@@ -17,6 +19,8 @@ in
     wayland
     direnv
     hyprshade
+  ]
+  ++ lib.optionals (feature "music") [
     waybar-lyric
   ];
 

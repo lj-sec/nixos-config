@@ -1,12 +1,14 @@
-{ ... }:
+{ lib, installFeatures ? {}, ... }:
+let
+  feature = name:
+    if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
+in
 {
   imports = [
     # Audio display
     ./cava.nix
     # Wayland Compositor
     ./hyprland
-    # Containers
-    ./distrobox
     # Custom taskbar
     ./waybar.nix
     # Notifications
@@ -19,8 +21,6 @@
     ./rofi.nix
     # Git
     ./git.nix
-    # Brave Browser
-    ./brave.nix
     # System Monitor
     ./btop.nix
     # Wallpaper
@@ -31,19 +31,35 @@
     ./fastfetch.nix
     # GTK, cursor, fonts, nix-colors
     ./theme
-    # VSCodium themes, config
-    ./vscode
-    # Password manager
-    ./pass.nix
     # Logout manager
     ./wlogout.nix
-    # Discord client
-    ./vesktop.nix
-    # Mail client
-    ./thunderbird.nix
     # XDG-Mime
     ./xdg.nix
     # All other packages with no config
     ./packages.nix
+  ]
+  ++ lib.optionals (feature "kali") [
+    # Containers
+    ./distrobox
+  ]
+  ++ lib.optionals (feature "brave") [
+    # Brave Browser
+    ./brave.nix
+  ]
+  ++ lib.optionals (feature "vscode") [
+    # VSCodium themes, config
+    ./vscode
+  ]
+  ++ lib.optionals (feature "pass") [
+    # Password manager
+    ./pass.nix
+  ]
+  ++ lib.optionals (feature "communication") [
+    # Discord client
+    ./vesktop.nix
+  ]
+  ++ lib.optionals (feature "mail") [
+    # Mail client
+    ./thunderbird.nix
   ];
 }
