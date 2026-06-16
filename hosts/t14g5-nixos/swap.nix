@@ -9,7 +9,7 @@
 
   swapDevices = [
     {
-      device = "/var/lib/swap/swapfile"; # perms 600; created with chattr +C on the dir
+      device = "/var/lib/swap/swapfile"; # Btrfs-safe swapfile managed by NixOS when size is set
       size = 20 * 1024; # 20G in MB
     }
   ];

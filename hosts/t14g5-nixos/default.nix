@@ -73,6 +73,5 @@ in
     cpupower-gui
     linuxPackages.cpupower
     powertop
-    ntfs3g
   ];
 }

@@ -2,45 +2,29 @@
   description = "My NixOS Flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nix-colors.url = "github:Misterio77/nix-colors";
     nixos-boot.url = "github:lj-sec/nixos-boot";
 
-    catppuccin.url = "github:catppuccin/nix";
+    catppuccin = {
+      url = "github:catppuccin/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    hyprland.url = "github:hyprwm/Hyprland";
-
-    hypr-contrib = {
-      url = "github:hyprwm/contrib";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hyprpicker = {
-      url = "github:hyprwm/hyprpicker";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    
-    hyprlock = {
-      url = "github:hyprwm/hyprlock";
-      inputs = {
-        hyprgraphics.follows = "hyprland/hyprgraphics";
-        hyprlang.follows = "hyprland/hyprlang";
-        hyprutils.follows = "hyprland/hyprutils";
-        nixpkgs.follows = "nixpkgs";
-        systems.follows = "hyprland/systems";
-      };
-    };
-
   };
 
   outputs = { self, nixpkgs, ... }@inputs:
   let
     lib = nixpkgs.lib;
+    hostsDir = ./hosts;
+    hostNames =
+      builtins.attrNames
+        (lib.filterAttrs (_: type: type == "directory") (builtins.readDir hostsDir));
+
     usernameFromEnv = builtins.getEnv "NIXOS_CONFIG_USERNAME";
     username = if usernameFromEnv != "" then usernameFromEnv else "curse";
     featuresFromEnv = builtins.getEnv "NIXOS_CONFIG_FEATURES";
@@ -77,47 +61,45 @@
       virtualization = featureEnabled "virtualization";
       vscode = featureEnabled "vscode";
     };
-    system = "x86_64-linux";
 
-    pkgs = import nixpkgs {
-      inherit system;
+    hostDefaults = {
+      t14g5-nixos = {
+        system = "x86_64-linux";
+        profile = "laptop";
+        hasFingerprint = true;
+      };
+      omen30l-nixos = {
+        system = "x86_64-linux";
+        profile = "desktop";
+        hasFingerprint = false;
+      };
     };
 
+    hostMeta = host:
+      let
+        metaPath = hostsDir + "/${host}/meta.nix";
+      in
+      (hostDefaults.${host} or { })
+      // (if builtins.pathExists metaPath then import metaPath else { });
+
+    mkHost = host:
+      let
+        meta = hostMeta host;
+        system = meta.system or "x86_64-linux";
+        hasFingerprint = meta.hasFingerprint or false;
+        hostProfile = meta.profile or "desktop";
+      in
+      lib.nixosSystem {
+        inherit system;
+        modules = [
+          (hostsDir + "/${host}")
+        ];
+        specialArgs = {
+          inherit self inputs username installFeatures hasFingerprint host hostProfile;
+          hostMeta = meta;
+        };
+      };
   in {
-    nixosConfigurations = {
-      t14g5-nixos = lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./hosts/t14g5-nixos
-        ];
-        specialArgs = {
-          hasFingerprint = true;
-          host = "t14g5-nixos";
-          inherit self inputs username installFeatures;
-        };
-      };
-      omen30l-nixos = lib.nixosSystem {
-        inherit system;
-        modules = [
-          ./hosts/omen30l-nixos 
-        ];
-        specialArgs = {
-          hasFingerprint = false;
-          host = "omen30l-nixos";
-          inherit self inputs username installFeatures;
-        };
-      };
-      precision3640-nixos = lib.nixosSystem {
-        inherit system;
-        modules = [
-         ./hosts/precision3640-nixos
-        ];
-        specialArgs = {
-          hasFingerprint = false;
-          host = "precision3640-nixos";
-          inherit self inputs username installFeatures;
-        };
-      };
-    };
+    nixosConfigurations = lib.genAttrs hostNames mkHost;
   };
 }

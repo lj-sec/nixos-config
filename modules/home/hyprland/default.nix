@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ ... }:
 {
   imports = [
     # General keybinds, exec-once, and window rules
@@ -15,7 +15,5 @@
     ./hyprshade.nix
     # Screen brightness reduction at sunset
     ./wlsunset.nix
-    # Hyprland module
-    inputs.hyprland.homeManagerModules.default
   ];
 }

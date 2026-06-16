@@ -1,18 +1,8 @@
-{ inputs, pkgs, ... }:
-let
-  system = pkgs.stdenv.hostPlatform.system;
-  hyprlandPackage = inputs.hyprland.packages.${system}.default.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [
-      ./patches/hyprland-device-config-null-guard.patch
-    ];
-  });
-in
+{ pkgs, ... }:
 {
   programs.hyprland = {
     enable = true;
-    package = hyprlandPackage;
     withUWSM = true;
-    portalPackage = inputs.hyprland.packages.${system}.xdg-desktop-portal-hyprland;
   };
 
   xdg.portal = {

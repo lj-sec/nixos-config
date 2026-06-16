@@ -1,56 +1,15 @@
-{ config, ... }:
-let
-  p = config.colorScheme.palette;
-  custom = {
-    font = "0xProto Nerd Font Mono";
-    font_size    = 10;
-    font_weight  = "Bold";
-    text_color   = "#${p.base05}";
-    background_0 = "#${p.base00}";
-    background_1 = "#${p.base01}";
-    border_color = "#${p.base03}";
-    red     = "#${p.base08}";
-    orange  = "#${p.base09}";
-    yellow  = "#${p.base0A}";
-    green   = "#${p.base0B}";
-    cyan    = "#${p.base0C}";
-    blue    = "#${p.base0D}";
-    magenta = "#${p.base0E}";
-    brown   = "#${p.base0F}";
-    opacity = "1";
-  };
-in
+{ ... }:
 {
-  programs.kitty = with custom; {
+  catppuccin.kitty.enable = true;
+
+  programs.kitty = {
     enable = true;
     settings = {
-      foreground = "${text_color}";
-      background = "${background_0}";
-
-      color0 = background_1;
-      color1 = red;
-      color2 = green;
-      color3 = yellow;
-      color4 = blue;
-      color5 = magenta;
-      color6 = cyan;
-      color7 = text_color;
-      color8 = border_color;
-      color9 = red;
-      color10 = green;
-      color11 = yellow;
-      color12 = blue;
-      color13 = magenta;
-      color14 = cyan;
-      color15 = "#${p.base07}";
-      
-      url_color = blue;
-
-      background_opacity = "${opacity}";
+      background_opacity = "1";
       dynamic_background_opacity = "yes";
 
-      font_family = font;
-      font_size = font_size;
+      font_family = "0xProto Nerd Font Mono";
+      font_size = 10;
 
       confirm_os_window_close = 0;
     };

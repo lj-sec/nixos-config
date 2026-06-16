@@ -1,19 +1,13 @@
-{ config, pkgs, inputs, lib, installFeatures ? {}, ... }:
+{ pkgs, lib, installFeatures ? {}, ... }:
 let
-  system = pkgs.stdenv.hostPlatform.system;
   feature = name:
     if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
-  hyprlandPackage = inputs.hyprland.packages.${system}.default.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [
-      ./../../core/patches/hyprland-device-config-null-guard.patch
-    ];
-  });
 in
 {
   home.packages = with pkgs; [
     awww
-    inputs.hypr-contrib.packages.${pkgs.stdenv.hostPlatform.system}.grimblast
-    inputs.hyprpicker.packages.${pkgs.stdenv.hostPlatform.system}.hyprpicker
+    grimblast
+    hyprpicker
     wf-recorder
     glib
     wayland
@@ -29,7 +23,7 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = hyprlandPackage;
+    configType = "hyprlang";
 
     xwayland = {
       enable = true;

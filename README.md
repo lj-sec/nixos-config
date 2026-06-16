@@ -210,94 +210,74 @@ Some quirks of note that have been run into:
 > [!WARNING]  
 > This configuration is tailored to my hardware, and sits on top of btrfs.  
 > You will need to adjust `hosts/<your-host>/hardware-configuration.nix` and other modules for your setup.
-> You will also need to create your own swapfile for sleep/hibernation.
+> You will also need to choose a swapfile size and verify hibernation offsets on the installed machine.
+
+The current reinstall workflow is documented in [`docs/reinstall.md`](./docs/reinstall.md). Use it for:
+
+- full-disk NixOS reinstall on the laptop
+- installing an existing host onto filesystems already mounted at `/mnt`
+- generating a new host scaffold
+- understanding the Btrfs swapfile and hibernation offset flow
+
+Quick full-disk reinstall entrypoint from a NixOS installer shell:
+
+```bash
+git clone https://github.com/lj-sec/nixos-config.git
+cd nixos-config
+sudo bash scripts/full-disk-install.sh --host t14g5-nixos --username curse
+```
+
+The script prints the selected disk and requires an exact `WIPE /dev/...` confirmation before partitioning or formatting.
 
 ### 0. Requirements
 
-- NixOS 25.11 or newer
+- NixOS 26.05 stable or the stable release tracked by `flake.nix`
 - Home Manager module support
 - UEFI system with Btrfs (recommended)
 - Internet connection for flake inputs
 
 If you’re starting from scratch:
- - Download the official ISO: → [https://nixos.org/download](https://nixos.org/download)
- - Follow the official installation guide: → [https://nixos.org/manual/nixos/stable/#sec-installation](https://nixos.org/manual/nixos/stable/#sec-installation)
+ - Download the official ISO: [https://nixos.org/download](https://nixos.org/download)
+ - Follow the official installation guide: [https://nixos.org/manual/nixos/stable/#sec-installation](https://nixos.org/manual/nixos/stable/#sec-installation)
  - Partition your drive with EFI + Btrfs, or your file system of choice
  - When finished, your system’s hardware configuration will live at `/etc/nixos/hardware-configuration.nix`
 
 Once NixOS boots successfully, continue below to integrate this flake.
 
-### 1. Create a swap file for hibernation:
+### 1. Configure host and swap
+
+For a new machine, generate a host scaffold:
 
 ```bash
-sudo mkdir -p /var/lib/swap
-sudo chattr +C /var/lib/swap                # Disable COW on btrfs
-sudo fallocate -l <size-of-RAM>G /var/lib/swap/swapfile
-sudo chmod 600 /var/lib/swap/swapfile
-sudo mkswap /var/lib/swap/swapfile
+bash scripts/new-host.sh --host <your-host> --profile laptop --swap-gib <size-of-RAM>
 ```
 
-Then record the device UUID and offset (you’ll need these for your swap.nix):
-```bash
-# Find UUID of the partition containing your swapfile
-df --output=source /var/lib/swap/swapfile | tail -1
+Generated hosts use the NixOS `swapDevices.*.size` option so NixOS creates the swapfile. On Btrfs, current NixOS uses `btrfs filesystem mkswapfile`, which satisfies the no-COW/no-holes swapfile requirements.
 
-# On btrfs, find the swapfile offset:
+For hibernation, record the Btrfs resume offset after the real swapfile exists:
+
+```bash
 sudo btrfs inspect-internal map-swapfile -r /var/lib/swap/swapfile
 ```
 
-### 2. Set up host configuration:
+The full-disk installer does this automatically and writes the result into `hosts/<host>/swap.nix`.
 
-You have two choices:
+### 2. Install or rebuild
 
-<details>
-<summary>Option A - Modifying an existing host</summary>
-<br>
-Clone this repository and enter it:
+For a full-disk reinstall, use the guarded wipe workflow:
 
 ```bash
-git clone https://github.com/lj-sec/nixos-config.git
-cd nixos-config
+sudo bash scripts/full-disk-install.sh --host t14g5-nixos --username curse
 ```
 
-Replace the contents of one of the present host's hardware-configuration.nix with your own:
-```bash
-sudo cp /etc/nixos/hardware-configuration.nix hosts/<your-host>
-```
-
-Open swap.nix in your editor and update:
- - resume_offset= → your offset from earlier
- - resumeDevice= → your swap partition’s UUID path
- - size= → the size of your swapfile in GiB
-
-Ensure that in flake.nix the specialArgs `hasFingerprint` aligns with your preference on fingerprint authentication.
-
-And you're finished with this step!
-
-</details>
-
-<details>
-<summary>Option B - Creating your own host</summary>
-<br>
+For filesystems that are already mounted at `/mnt`, use the mounted install path from `./installer.sh` or run:
 
 ```bash
-git clone https://github.com/lj-sec/nixos-config.git
-cd nixos-config/hosts
-mkdir <your-host>
-sudo cp /etc/nixos/hardware-configuration.nix <your-host>
-touch <your-host>/default.nix
-touch <your-host>/swap.nix
+sudo env NIXOS_CONFIG_USERNAME=curse nixos-install --flake .#<your-host> --impure
 ```
-Modify default.nix and swap.nix, mimicking the setup that is present in the other hosts present.
-Ensure that `default.nix` imports `./../../modules/core`, `./hardware-configuration.nix`, and `./swap.nix` at a minimum, as that ensures the rest of the flake is strapped in.
 
----
+For an already-installed system, rebuild from the root of the repository:
 
-</details>
-
-### 3. Apply the configuration
-
-Finally, from the root of the repository:
 ```bash
 sudo nixos-rebuild switch --flake .#<your-host>
 ```
