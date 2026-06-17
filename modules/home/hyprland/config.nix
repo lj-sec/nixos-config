@@ -250,7 +250,7 @@ in
         };
       }
       # ThinkPad-only settings
-      (lib.mkIf ("${host}" == "t14g5-nixos") {
+      (lib.mkIf ("${host}" == "laptop") {
         bindl = [
           # All audio via wpctl; LED service will react instantly
           ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"

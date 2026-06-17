@@ -124,9 +124,75 @@ validate_swap_gib() {
   [[ "$size" =~ ^[1-9][0-9]*$ ]]
 }
 
+driver_profiles=(auto none amd intel nvidia vm)
+
+driver_profile_descriptions=(
+  "Use NixOS defaults without forcing a display driver"
+  "Disable explicit graphics driver configuration"
+  "AMDGPU driver for Ryzen/Radeon systems"
+  "Modesetting driver for Intel graphics"
+  "NVIDIA proprietary driver"
+  "VirtIO/QEMU guest profile for virtual machines"
+)
+
+validate_driver_profile() {
+  local profile="$1"
+  local known_profile
+
+  for known_profile in "${driver_profiles[@]}"; do
+    [[ "$profile" == "$known_profile" ]] && return 0
+  done
+
+  return 1
+}
+
+default_driver_profile() {
+  local host="$1"
+
+  case "$host" in
+    desktop) printf '%s\n' "nvidia" ;;
+    laptop) printf '%s\n' "amd" ;;
+    server) printf '%s\n' "none" ;;
+    vm) printf '%s\n' "vm" ;;
+    *) printf '%s\n' "auto" ;;
+  esac
+}
+
+select_driver_profile() {
+  local default="$1"
+  local profile i
+
+  info "Available driver profiles:" >&2
+  for i in "${!driver_profiles[@]}"; do
+    printf '  %-8s %s\n' "${driver_profiles[$i]}" "${driver_profile_descriptions[$i]}" >&2
+  done
+
+  while true; do
+    profile="$(prompt_default "Driver profile" "$default")"
+    if validate_driver_profile "$profile"; then
+      printf '%s\n' "$profile"
+      return
+    fi
+    warn "Unknown driver profile: $profile"
+  done
+}
+
+select_network_hostname() {
+  local default="$1"
+  local hostname
+
+  while true; do
+    hostname="$(prompt_default "Networking hostname" "$default")"
+    if validate_hostname "$hostname"; then
+      printf '%s\n' "$hostname"
+      return
+    fi
+    warn "Use lowercase letters, numbers, and hyphens only."
+  done
+}
+
 host_names() {
-  local root="$1"
-  find "$root/hosts" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+  printf '%s\n' desktop laptop server vm
 }
 
 select_from_list() {
@@ -136,10 +202,10 @@ select_from_list() {
   local choice
 
   ((${#items[@]} > 0)) || die "No choices available for: $prompt"
-  printf '%s\n' "$prompt"
+  printf '%s\n' "$prompt" >&2
   local i
   for i in "${!items[@]}"; do
-    printf '  %d) %s\n' "$((i + 1))" "${items[$i]}"
+    printf '  %d) %s\n' "$((i + 1))" "${items[$i]}" >&2
   done
 
   while true; do
@@ -201,11 +267,11 @@ select_features() {
     return
   fi
 
-  info "Enter a comma-separated feature list, or '__none__' for no optional features."
-  info "Available features:"
+  info "Enter a comma-separated feature list, or '__none__' for no optional features." >&2
+  info "Available features:" >&2
   local i
   for i in "${!feature_keys[@]}"; do
-    printf '  %-15s %s\n' "${feature_keys[$i]}" "${feature_descriptions[$i]}"
+    printf '  %-15s %s\n' "${feature_keys[$i]}" "${feature_descriptions[$i]}" >&2
   done
 
   csv="$(prompt_default "Features" "__none__")"
@@ -242,15 +308,69 @@ features_summary() {
   fi
 }
 
+feature_selected() {
+  local features="$1"
+  local wanted="$2"
+  local feature
+  local selected_features
+
+  [[ "$features" != "__none__" ]] || return 1
+  [[ -n "$features" ]] || return 0
+
+  IFS=',' read -r -a selected_features <<< "$features"
+  for feature in "${selected_features[@]}"; do
+    feature="${feature//[[:space:]]/}"
+    [[ "$feature" == "$wanted" ]] && return 0
+  done
+
+  return 1
+}
+
+write_local_config() {
+  local file="$1"
+  local username="$2"
+  local network_hostname="$3"
+  local driver_profile="$4"
+  local features="$5"
+  local feature enabled
+
+  validate_username "$username" || die "Invalid username: $username"
+  validate_hostname "$network_hostname" || die "Invalid networking hostname: $network_hostname"
+  validate_driver_profile "$driver_profile" || die "Invalid driver profile: $driver_profile"
+
+  {
+    cat <<EOF
+{
+  username = "$username";
+  networkingHostName = "$network_hostname";
+  driverProfile = "$driver_profile";
+  installFeatures = {
+EOF
+
+    for feature in "${feature_keys[@]}"; do
+      enabled="false"
+      if feature_selected "$features" "$feature"; then
+        enabled="true"
+      fi
+      printf '      %s = %s;\n' "$feature" "$enabled"
+    done
+
+    cat <<'EOF'
+  };
+}
+EOF
+  } > "$file"
+}
+
 select_disk() {
   require_cmd lsblk readlink
   mapfile -t disks < <(lsblk -dpno PATH,SIZE,MODEL,SERIAL,TYPE | awk '$NF == "disk" {print}')
   ((${#disks[@]} > 0)) || die "No block disks found."
 
-  printf '%s\n' "Available disks:"
+  printf '%s\n' "Available disks:" >&2
   local i
   for i in "${!disks[@]}"; do
-    printf '  %d) %s\n' "$((i + 1))" "${disks[$i]}"
+    printf '  %d) %s\n' "$((i + 1))" "${disks[$i]}" >&2
   done
 
   local choice disk type

@@ -1,4 +1,4 @@
-{ pkgs, lib, host, installFeatures ? {}, ... }:
+{ pkgs, lib, host, networkingHostName ? host, installFeatures ? {}, ... }:
 let
   feature = name:
     if builtins.hasAttr name installFeatures then installFeatures.${name} else true;
@@ -6,7 +6,7 @@ in
 lib.mkMerge [
   {
     networking = {
-      hostName = host;
+      hostName = networkingHostName;
       networkmanager.enable = true;
     };
 

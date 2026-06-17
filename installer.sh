@@ -16,15 +16,16 @@ Interactive front door for:
   1. rebuilding an installed system
   2. installing an existing host to an already mounted /mnt
   3. wiping a selected disk and installing an existing host
-  4. generating a new host scaffold
 USAGE
 }
 
 run_rebuild() {
   require_cmd nixos-rebuild sudo
 
-  local host username features
+  local host network_hostname driver_profile username features
   host="$(select_host "$repo")"
+  network_hostname="$(select_network_hostname "$host")"
+  driver_profile="$(select_driver_profile "$(default_driver_profile "$host")")"
   username="$(prompt_default "NixOS username" "${USER:-curse}")"
   validate_username "$username" || die "Invalid username: $username"
   features="$(select_features)"
@@ -33,15 +34,17 @@ run_rebuild() {
 
 Rebuild summary
 ---------------
-Host:     $host
-Username: $username
-Features: $(features_summary "$features")
-Command:  sudo nixos-rebuild switch --impure --flake .#$host
+Flake host:          $host
+Networking hostname: $network_hostname
+Driver profile:      $driver_profile
+Username:            $username
+Features:            $(features_summary "$features")
+Command:             sudo nixos-rebuild switch --flake .#$host
 SUMMARY
 
   confirm_yes_no "Run this rebuild?" "n" || die "Rebuild cancelled."
-  sudo env NIXOS_CONFIG_USERNAME="$username" NIXOS_CONFIG_FEATURES="$features" \
-    nixos-rebuild switch --impure --flake ".#$host"
+  write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features"
+  sudo nixos-rebuild switch --flake ".#$host"
 }
 
 run_mounted_install() {
@@ -49,8 +52,10 @@ run_mounted_install() {
 
   findmnt /mnt >/dev/null 2>&1 || die "/mnt is not mounted. Mount the target root filesystem first."
 
-  local host username features
+  local host network_hostname driver_profile username features
   host="$(select_host "$repo")"
+  network_hostname="$(select_network_hostname "$host")"
+  driver_profile="$(select_driver_profile "$(default_driver_profile "$host")")"
   username="$(prompt_default "NixOS username" "curse")"
   validate_username "$username" || die "Invalid username: $username"
   features="$(select_features)"
@@ -59,18 +64,20 @@ run_mounted_install() {
 
 Mounted install summary
 -----------------------
-Host:      $host
-Username:  $username
-Target:    existing filesystems mounted under /mnt
-Features:  $(features_summary "$features")
-Command:   sudo nixos-install --flake .#$host --impure
+Flake host:          $host
+Networking hostname: $network_hostname
+Driver profile:      $driver_profile
+Username:            $username
+Target:              existing filesystems mounted under /mnt
+Features:            $(features_summary "$features")
+Command:             sudo nixos-install --flake .#$host
 
 No partitioning or formatting will be performed by this mode.
 SUMMARY
 
   confirm_yes_no "Install to the mounted /mnt target?" "n" || die "Install cancelled."
-  sudo env NIXOS_CONFIG_USERNAME="$username" NIXOS_CONFIG_FEATURES="$features" \
-    nixos-install --flake ".#$host" --impure
+  write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features"
+  sudo nixos-install --flake ".#$host"
 }
 
 run_full_disk_install() {
@@ -82,10 +89,6 @@ run_full_disk_install() {
   else
     sudo --preserve-env=PATH "$repo/scripts/full-disk-install.sh"
   fi
-}
-
-run_new_host() {
-  "$repo/scripts/new-host.sh"
 }
 
 main() {
@@ -103,18 +106,16 @@ NixOS repository installer
 1) Rebuild this already-installed system
 2) Install an existing host to filesystems already mounted at /mnt
 3) Full-disk install an existing host, wiping a selected disk
-4) Generate a new host scaffold
-5) Quit
+4) Quit
 MENU
 
   local choice
-  read -r -p "Choose 1-5: " choice
+  read -r -p "Choose 1-4: " choice
   case "$choice" in
     1) run_rebuild ;;
     2) run_mounted_install ;;
     3) run_full_disk_install ;;
-    4) run_new_host ;;
-    5) exit 0 ;;
+    4) exit 0 ;;
     *) die "Invalid selection." ;;
   esac
 }

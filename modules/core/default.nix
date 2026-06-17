@@ -11,6 +11,8 @@ in
     ./home.nix
     # Nix settings, system packages
     ./system.nix
+    # Installer-selected hardware driver profile
+    ./hardware-profile.nix
     # Wayland settings
     ./wayland.nix
   ]

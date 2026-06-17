@@ -15,16 +15,16 @@
 
 <p align="center">
   <a href="https://github.com/lj-sec">
-    <img src="https://img.shields.io/github/followers/lj-sec?label=Follow%20@lj-sec&style=social" alt="Follow @lj-sec"/>
+    <img src="https://img.shields.io/github/followers/lj-sec?label=Follow%20@lj-sec" alt="Follow @lj-sec"/>
   </a>
 </p>
 
-# LJ's Nix Flake
+# LJ's NixOS Flake
 
 </div>
 
-This repository contains my personal NixOS configuration, managed declaratively with flakes and home-manager.  
-The goal of this repository is to build a usable, user-friendly NixOS setup that stays out of the way and lets me focus on being productive.
+This repository contains declarative NixOS host configurations managed with flakes and Home Manager.
+The goal is a usable, user-friendly NixOS setup that stays out of the way for daily work.
 
 ---
 
@@ -49,9 +49,10 @@ nixos-config/
 ├── flake.nix
 ├── flake.lock
 ├── hosts/
-│   ├── t14g5-nixos/
-│   ├── omen30l-nixos/
-│   └── etc...
+│   ├── desktop/
+│   ├── laptop/
+│   ├── server/
+│   └── vm/
 ├── modules/
 │   ├── core/
 │   │   └── services/
@@ -73,7 +74,7 @@ nixos-config/
 - **Waybar** as the status bar with functional and clickable modules
 - **SwayNC** as the notification daemon and center
 - **Fish shell** with declarative aliases and customizations
-- **Nix-Colors** integration for consistent theming across supported apps
+- **Catppuccin** and shared palette integration for consistent theming across supported apps
 - **Gaming support** via Steam and GE-Proton
 - **Virtualization support** via libvirt, virt-manager, and SPICE
 - **Distrobox** for containers
@@ -193,10 +194,11 @@ nixos-config/
 
 ## System Notes
 
-This setup was built mostly on and for a Lenovo ThinkPad T14 Gen5 (AMD) 21MC, and some bugs are still being resolved.
-Some quirks of note that have been run into:
- - This keyboard's micmute button and LED have been flaky to configure, as it is not throwing XF86AudioMicMute when pressed as it should. In this repo I have created a script and a service located in `./hosts/t14g5-nixos/default.nix` to ensure the accuracy of the LED via writing directly to `/sys/class/leds/platform::micmute/brightness` and the waybar custom-mic module.
- - The Steam games that have been tested on the ThinkPad (i.e. Noita, Balatro) have only launched when forced to use the GE-Proton Compatibility tool. When using GE-Proton, no issues.
+The `desktop` host is being tested on an HP Omen-30l with i9-10850K with an NVIDIA RTX 3070.
+The `laptop` host targets a Lenovo Thinkpad T14 Gen5 with a Ryzen 5 PRO 8540U with integrated 740m graphics.
+Some host-specific quirks are documented in the relevant host module:
+ - The laptop mic-mute button and LED need direct LED state handling from `./hosts/laptop/default.nix`.
+ - Some tested Steam games on the laptop require the GE-Proton compatibility tool.
 
 ---
 
@@ -208,26 +210,28 @@ Some quirks of note that have been run into:
 > Use at your own risk, and review configs before applying them to your machine.
 
 > [!WARNING]  
-> This configuration is tailored to my hardware, and sits on top of btrfs.  
+> This configuration is tailored to specific host hardware, and sits on top of btrfs.
 > You will need to adjust `hosts/<your-host>/hardware-configuration.nix` and other modules for your setup.
 > You will also need to choose a swapfile size and verify hibernation offsets on the installed machine.
 
 The current reinstall workflow is documented in [`docs/reinstall.md`](./docs/reinstall.md). Use it for:
 
-- full-disk NixOS reinstall on the laptop
+- full-disk NixOS reinstall on a target machine
 - installing an existing host onto filesystems already mounted at `/mnt`
-- generating a new host scaffold
-- understanding the Btrfs swapfile and hibernation offset flow
+- selecting a fixed flake host, networking hostname, and driver profile
+- understanding the Btrfs swapfile and hibernation offset
 
 Quick full-disk reinstall entrypoint from a NixOS installer shell:
 
 ```bash
 git clone https://github.com/lj-sec/nixos-config.git
 cd nixos-config
-sudo bash scripts/full-disk-install.sh --host t14g5-nixos --username curse
+sudo bash scripts/full-disk-install.sh --host laptop --username curse
 ```
 
-The script prints the selected disk and requires an exact `WIPE /dev/...` confirmation before partitioning or formatting.
+The script prompts for `networking.hostName` and a driver profile, prints the
+selected disk, and requires an exact `WIPE /dev/...` confirmation before
+partitioning or formatting.
 
 ### 0. Requirements
 
@@ -244,15 +248,18 @@ If you’re starting from scratch:
 
 Once NixOS boots successfully, continue below to integrate this flake.
 
-### 1. Configure host and swap
+### 1. Choose host, hostname, driver profile, and swap
 
-For a new machine, generate a host scaffold:
+The fixed flake hosts are `desktop`, `laptop`, `server`, and `vm`. The flake
+host name can differ from the installed system hostname; the installer writes
+the chosen hostname to `hosts/<host>/local.nix`.
 
-```bash
-bash scripts/new-host.sh --host <your-host> --profile laptop --swap-gib <size-of-RAM>
-```
+The installer also asks for a driver profile. Available profiles are `auto`,
+`none`, `amd`, `intel`, `nvidia`, and `vm`.
 
-Generated hosts use the NixOS `swapDevices.*.size` option so NixOS creates the swapfile. On Btrfs, current NixOS uses `btrfs filesystem mkswapfile`, which satisfies the no-COW/no-holes swapfile requirements.
+Hosts use the NixOS `swapDevices.*.size` option so NixOS creates the swapfile.
+On Btrfs, current NixOS uses `btrfs filesystem mkswapfile`, which satisfies the
+no-COW/no-holes swapfile requirements.
 
 For hibernation, record the Btrfs resume offset after the real swapfile exists:
 
@@ -260,26 +267,27 @@ For hibernation, record the Btrfs resume offset after the real swapfile exists:
 sudo btrfs inspect-internal map-swapfile -r /var/lib/swap/swapfile
 ```
 
-The full-disk installer does this automatically and writes the result into `hosts/<host>/swap.nix`.
+The full-disk installer does this automatically and writes the result into
+`hosts/<host>/swap.nix`.
 
 ### 2. Install or rebuild
 
-For a full-disk reinstall, use the guarded wipe workflow:
+For a full-disk reinstall:
 
 ```bash
-sudo bash scripts/full-disk-install.sh --host t14g5-nixos --username curse
+sudo bash scripts/full-disk-install.sh --host laptop --username curse
 ```
 
 For filesystems that are already mounted at `/mnt`, use the mounted install path from `./installer.sh` or run:
 
 ```bash
-sudo env NIXOS_CONFIG_USERNAME=curse nixos-install --flake .#<your-host> --impure
+sudo nixos-install --flake .#laptop
 ```
 
 For an already-installed system, rebuild from the root of the repository:
 
 ```bash
-sudo nixos-rebuild switch --flake .#<your-host>
+sudo nixos-rebuild switch --flake .#desktop
 ```
 
 ---
@@ -287,14 +295,6 @@ sudo nixos-rebuild switch --flake .#<your-host>
 ## Shoutout
 
 A lot of inspiration (and some configs) came from [Frost-Phoenix’s nixos-config](https://github.com/Frost-Phoenix/nixos-config/tree/main).
-
----
-
----
-
-## To Do
-
-
 
 ---
 

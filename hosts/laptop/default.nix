@@ -14,10 +14,8 @@ let
         "$@"
     }
 
-    # Toggle mic mute
     as_user ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
-    # Sync LED to actual mute state
     if as_user ${pkgs.wireplumber}/bin/wpctl get-volume @DEFAULT_AUDIO_SOURCE@ \
       | ${pkgs.gnugrep}/bin/grep -q '\[MUTED\]'; then
       echo 1 > "$LED"
@@ -45,27 +43,24 @@ in
     };
   };
 
-  # Rebinding Copilot key
   services.keyd = {
     enable = true;
-    keyboards = {
-      default = {
-        ids = [ "0001:0001:09b4e68d" ];
-        settings = {
-          main = {
-            "leftshift+leftmeta+f23" = "f24";
-          };
-        };
+    keyboards.default = {
+      ids = [ "0001:0001:09b4e68d" ];
+      settings.main = {
+        "leftshift+leftmeta+f23" = "f24";
       };
     };
   };
 
-  users.groups.micled = {};
+  users.groups.micled = { };
   users.users.${username}.extraGroups = [ "micled" ];
 
   systemd.tmpfiles.rules = [
     "z /sys/class/leds/platform::micmute/brightness 0664 root micled - -"
   ];
+
+  hardware.cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
 
   environment.systemPackages = with pkgs; [
     acpi

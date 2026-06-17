@@ -15,6 +15,10 @@ It never runs unless you confirm the exact disk-specific wipe phrase.
 Options:
   --host NAME       Existing flake host to install
   --disk PATH       Whole target disk, e.g. /dev/nvme0n1
+  --network-hostname NAME
+                    networking.hostName for the installed system
+  --driver-profile PROFILE
+                    auto, none, amd, intel, nvidia, or vm
   --username NAME   NixOS user name passed to the flake
   --swap-gib SIZE   Swapfile size in GiB, default 20
   --features CSV    Optional feature CSV, __none__, or empty for defaults
@@ -25,6 +29,8 @@ USAGE
 repo="$(repo_root)"
 host=""
 disk=""
+network_hostname=""
+driver_profile=""
 username=""
 swap_gib="20"
 features=""
@@ -33,6 +39,8 @@ while (($# > 0)); do
   case "$1" in
     --host) host="${2:-}"; shift 2 ;;
     --disk) disk="${2:-}"; shift 2 ;;
+    --network-hostname) network_hostname="${2:-}"; shift 2 ;;
+    --driver-profile) driver_profile="${2:-}"; shift 2 ;;
     --username) username="${2:-}"; shift 2 ;;
     --swap-gib) swap_gib="${2:-}"; shift 2 ;;
     --features) features="${2:-}"; shift 2 ;;
@@ -51,6 +59,16 @@ if [[ -z "$host" ]]; then
   host="$(select_host "$repo")"
 fi
 [[ -d "$repo/hosts/$host" ]] || die "Unknown host: $host"
+
+if [[ -z "$network_hostname" ]]; then
+  network_hostname="$(select_network_hostname "$host")"
+fi
+validate_hostname "$network_hostname" || die "Invalid networking hostname: $network_hostname"
+
+if [[ -z "$driver_profile" ]]; then
+  driver_profile="$(select_driver_profile "$(default_driver_profile "$host")")"
+fi
+validate_driver_profile "$driver_profile" || die "Invalid driver profile: $driver_profile"
 
 if [[ -z "$username" ]]; then
   username="$(prompt_default "NixOS username" "curse")"
@@ -80,6 +98,8 @@ cat <<SUMMARY
 Full-disk NixOS install summary
 --------------------------------
 Host:          $host
+Hostname:      $network_hostname
+Driver:        $driver_profile
 Source repo:    $repo
 Install repo:   /mnt/etc/nixos
 Username:      $username
@@ -91,6 +111,7 @@ Swapfile:      /var/lib/swap/swapfile (${swap_gib} GiB)
 Features:      $(features_summary "$features")
 
 Files updated in the installed system repo before install:
+  /mnt/etc/nixos/hosts/$host/local.nix
   /mnt/etc/nixos/hosts/$host/hardware-configuration.nix
   /mnt/etc/nixos/hosts/$host/swap.nix
 
@@ -154,6 +175,7 @@ fi
 
 info "Generating hardware configuration"
 nixos-generate-config --root /mnt --show-hardware-config > "$install_repo/hosts/$host/hardware-configuration.nix"
+write_local_config "$install_repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features"
 
 cat > "$install_repo/hosts/$host/swap.nix" <<EOF
 { ... }:
@@ -176,7 +198,6 @@ EOF
 
 ok "Updated hardware and swap configuration for $host."
 info "Installing NixOS. You may be prompted for passwords by nixos-install."
-env NIXOS_CONFIG_USERNAME="$username" NIXOS_CONFIG_FEATURES="$features" \
-  nixos-install --flake "$install_repo#$host" --impure
+nixos-install --flake "$install_repo#$host"
 
 ok "Install finished. Review the output above before rebooting."

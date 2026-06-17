@@ -10,7 +10,7 @@
   swapDevices = [
     {
       device = "/var/lib/swap/swapfile"; # Btrfs-safe swapfile managed by NixOS when size is set
-      size = 20 * 1024; # 20G in MB
+      size = 16 * 1024; # 16G in MB
     }
   ];
 }
