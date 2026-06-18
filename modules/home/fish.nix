@@ -279,6 +279,10 @@ in
 
           set -l flake_ref "$flake#$host"
 
+          if test "$flake" = "."; and test -f ./scripts/sync-live-hardware-config.sh
+            bash ./scripts/sync-live-hardware-config.sh "$host"
+          end
+
           echo "sudo nixos-rebuild $action --flake $flake_ref"
           sudo nixos-rebuild $action --flake "$flake_ref"
         '';

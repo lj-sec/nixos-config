@@ -7,9 +7,6 @@
   };
 
   services.logind.settings.Login = {
-    IdleAction = "suspend-then-hibernate";
-    IdleActionSec = "30min";
-
     HandleLidSwitch = "suspend-then-hibernate";
     HandleLidSwitchExternalPower = "suspend-then-hibernate";
   };
