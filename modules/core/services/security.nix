@@ -4,6 +4,12 @@ let
     services.dbus.enable = true;
     security.polkit.enable = true;
     services.seatd.enable = true;
+    services.gnome.gnome-keyring.enable = true;
+
+    environment.systemPackages = with pkgs; [
+      libsecret
+      seahorse
+    ];
     
     services.udev.extraRules = ''
       ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="Video Bus*", ENV{LIBINPUT_IGNORE_DEVICE}="1"

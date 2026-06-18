@@ -14,7 +14,10 @@
     ];
 
     config = {
-      common.default = [ "hyprland" "gtk" ];
+      common = {
+        default = [ "hyprland" "gtk" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
 
       hyprland = {
         default = [ "hyprland" "gtk" ];
@@ -22,6 +25,7 @@
         "org.freedesktop.impl.portal.OpenURI" = [ "gtk" ];
         "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
         "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
       };
     };
   };
