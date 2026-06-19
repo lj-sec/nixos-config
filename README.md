@@ -97,6 +97,12 @@ nixos-config/
   sudo nixos-rebuild [ACTION] [FLAKE]#[HOST]
   ```
 
+  For local `.` rebuilds, this function first runs
+  `scripts/preflight-rebuild.sh`. The preflight checks that the selected flake
+  host matches the running machine, Secure Boot/LUKS settings in
+  `hosts/<host>/local.nix` match the live system, and
+  `hardware-configuration.nix` UUIDs match live mounts without rewriting them.
+
   ### Default:
   ```bash
   sudo nixos-rebuild switch .#$(hostname)
@@ -293,6 +299,19 @@ For an already-installed system, rebuild from the root of the repository:
 ```bash
 sudo nixos-rebuild switch --flake .#desktop
 ```
+
+If `scripts/preflight-rebuild.sh` reports a hardware UUID diff, review it before
+changing anything. To intentionally update the host hardware config from the
+currently booted system, run:
+
+```bash
+bash scripts/sync-live-hardware-config.sh --write desktop
+```
+
+For Secure Boot or LUKS installs, keep the generated
+`hosts/<host>/local.nix installSecurity` block with the installed host. Rebuilding
+from a repo copy that lacks that block can produce unsigned boot entries or an
+initrd that cannot unlock the encrypted root.
 
 ---
 

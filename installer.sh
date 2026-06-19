@@ -43,8 +43,8 @@ Command:             sudo nixos-rebuild switch --flake .#$host
 SUMMARY
 
   confirm_yes_no "Run this rebuild?" "n" || die "Rebuild cancelled."
+  "$repo/scripts/preflight-rebuild.sh" switch "$host"
   write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features"
-  "$repo/scripts/sync-live-hardware-config.sh" "$host"
   sudo nixos-rebuild switch --flake ".#$host"
 }
 

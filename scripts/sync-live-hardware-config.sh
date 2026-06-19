@@ -4,16 +4,19 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo="$(cd -- "$script_dir/.." && pwd)"
 
-mode="write"
+mode="check"
 host=""
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/sync-live-hardware-config.sh [--check] [HOST]
+Usage: scripts/sync-live-hardware-config.sh [--check|--write] [HOST]
 
 Synchronize hosts/<host>/hardware-configuration.nix filesystem UUIDs with the
 currently mounted system. When HOST is omitted, the script matches the current
 hostname against hosts/*/local.nix networkingHostName.
+
+Default mode is --check. Use --write only when you intentionally want to update
+the target host's hardware config from the currently booted system.
 USAGE
 }
 
@@ -97,6 +100,9 @@ while (($# > 0)); do
     --check)
       mode="check"
       ;;
+    --write)
+      mode="write"
+      ;;
     -h|--help)
       usage
       exit 0
@@ -112,9 +118,15 @@ while (($# > 0)); do
   shift
 done
 
-require_cmd awk basename dirname findmnt hostname lsblk mktemp sed
+require_cmd awk basename cmp cp diff dirname findmnt hostname lsblk mktemp sed
 
-host="${host:-$(detect_host)}"
+current_host="$(detect_host)"
+if [[ -z "$host" ]]; then
+  host="$current_host"
+elif [[ "$host" != "$current_host" ]]; then
+  die "Refusing to compare host '$host' with live mounts from '$current_host'. Run this on the target host or omit HOST."
+fi
+
 hardware_config="$repo/hosts/$host/hardware-configuration.nix"
 [[ -f "$hardware_config" ]] || die "Missing hardware config: $hardware_config"
 
@@ -136,8 +148,11 @@ fi
 if [[ "$mode" == "check" ]]; then
   printf 'Hardware config differs from live mounts for host %s:\n' "$host" >&2
   diff -u "$hardware_config" "$tmp" >&2 || true
+  printf 'Run scripts/sync-live-hardware-config.sh --write %s only if this diff is expected.\n' "$host" >&2
   exit 1
 fi
 
+printf 'Updating %s to match live filesystem UUIDs for host %s:\n' "$hardware_config" "$host"
+diff -u "$hardware_config" "$tmp" || true
 cp "$tmp" "$hardware_config"
 printf 'Updated %s to match live filesystem UUIDs.\n' "$hardware_config"

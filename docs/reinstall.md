@@ -53,6 +53,10 @@ Lanzaboote in this installer because PCR 7 represents Secure Boot policy. The
 installer generates Secure Boot signing keys in `/var/lib/sbctl` when possible,
 but firmware key enrollment still happens after the first boot.
 
+The generated `hosts/<host>/local.nix` is part of the installed machine's boot
+contract. For Secure Boot or LUKS installs, do not rebuild from a stale repo copy
+that lacks the `installSecurity` block generated during installation.
+
 Do not assume a disk name. Confirm the target with `lsblk` from the installer
 environment before selecting it.
 
@@ -106,6 +110,14 @@ nix flake check
 nix build .#nixosConfigurations.<host>.config.system.build.toplevel
 nix fmt -- --check
 shellcheck -x installer.sh scripts/*.sh
+```
+
+On an installed machine, the `rebuild` fish function runs
+`scripts/preflight-rebuild.sh` before switching. Hardware UUID drift is reported
+as a diff only; apply it explicitly with:
+
+```sh
+bash scripts/sync-live-hardware-config.sh --write <host>
 ```
 
 If a formatter is not configured, use the repository's existing formatting

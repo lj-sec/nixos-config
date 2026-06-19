@@ -279,8 +279,13 @@ in
 
           set -l flake_ref "$flake#$host"
 
-          if test "$flake" = "."; and test -f ./scripts/sync-live-hardware-config.sh
-            bash ./scripts/sync-live-hardware-config.sh "$host"
+          if test "$flake" = "."; and test -f ./scripts/preflight-rebuild.sh
+            bash ./scripts/preflight-rebuild.sh "$action" "$host"
+            or begin
+              echo "Rebuild preflight failed; refusing to run nixos-rebuild." >&2
+              echo "Use REBUILD_SKIP_PREFLIGHT=1 only if you have verified the boot and disk settings manually." >&2
+              return 1
+            end
           end
 
           echo "sudo nixos-rebuild $action --flake $flake_ref"
