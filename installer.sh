@@ -49,7 +49,7 @@ SUMMARY
 }
 
 run_mounted_install() {
-  require_cmd findmnt nixos-install sudo
+  require_cmd findmnt nixos-generate-config nixos-install sudo
 
   findmnt /mnt >/dev/null 2>&1 || die "/mnt is not mounted. Mount the target root filesystem first."
 
@@ -77,11 +77,17 @@ Features:            $(features_summary "$features")
 Security:            $(security_summary "$encryption" "$secure_boot")
 Command:             sudo nixos-install --flake .#$host
 
+Files updated before install:
+  $repo/hosts/$host/hardware-configuration.nix
+  $repo/hosts/$host/local.nix
+
 No partitioning or formatting will be performed by this mode.
 Encryption is not configured by mounted install mode; use full-disk install for LUKS setup.
 SUMMARY
 
   confirm_yes_no "Install to the mounted /mnt target?" "n" || die "Install cancelled."
+  info "Generating hardware configuration from mounted target"
+  nixos-generate-config --root /mnt --show-hardware-config > "$repo/hosts/$host/hardware-configuration.nix"
   write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features" "$encryption" "$secure_boot"
   sudo nixos-install --flake ".#$host"
 }

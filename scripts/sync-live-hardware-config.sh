@@ -63,7 +63,7 @@ detect_host() {
 
 mount_uuid() {
   local target="$1"
-  local source uuid
+  local fstype source uuid
 
   uuid="$(findmnt -no UUID --target "$target" 2>/dev/null | awk 'NF { print; exit }')"
   if [[ -n "$uuid" ]]; then
@@ -71,15 +71,28 @@ mount_uuid() {
     return
   fi
 
+  fstype="$(findmnt -no FSTYPE --target "$target" 2>/dev/null | awk 'NF { print; exit }')"
+  if [[ "$fstype" == "btrfs" ]] && command -v btrfs >/dev/null 2>&1; then
+    uuid="$(btrfs filesystem show "$target" 2>/dev/null | awk '/uuid:/ { print $4; exit }')"
+    if [[ -n "$uuid" ]]; then
+      printf '%s\n' "$uuid"
+      return
+    fi
+  fi
+
   source="$(findmnt -no SOURCE --target "$target" 2>/dev/null || true)"
   [[ -n "$source" ]] || return 1
   source="${source%%[*}"
-  uuid="$(lsblk -no UUID "$source" | awk 'NF { print; exit }')"
+  uuid="$(blkid -s UUID -o value "$source" 2>/dev/null | awk 'NF { print; exit }')"
+  if [[ -z "$uuid" ]]; then
+    uuid="$(lsblk -no UUID "$source" 2>/dev/null | awk 'NF { print; exit }')"
+  fi
   [[ -n "$uuid" ]] || die "Could not resolve UUID for $target from $source"
   printf '%s\n' "$uuid"
 }
 
 sed_regex_escape() {
+  # shellcheck disable=SC2016
   printf '%s' "$1" | sed 's/[.[\*^$()+?{}|\\]/\\&/g; s#/#\\/#g'
 }
 
@@ -118,7 +131,7 @@ while (($# > 0)); do
   shift
 done
 
-require_cmd awk basename cmp cp diff dirname findmnt hostname lsblk mktemp sed
+require_cmd awk basename blkid cmp cp diff dirname findmnt hostname lsblk mktemp sed
 
 current_host="$(detect_host)"
 if [[ -z "$host" ]]; then

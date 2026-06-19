@@ -38,6 +38,10 @@ the network. The selected hostname, username, driver profile, and optional
 feature set are written to `hosts/<host>/local.nix` before install or rebuild,
 so flake evaluation remains pure.
 
+Mounted installs regenerate `hosts/<host>/hardware-configuration.nix` from
+the filesystems mounted under `/mnt` before running `nixos-install`. Full-disk
+installs do the same after partitioning and mounting the new target.
+
 The installer also asks for a driver profile. Available profiles are `auto`,
 `none`, `amd`, `intel`, `nvidia`, and `vm`.
 

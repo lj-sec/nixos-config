@@ -2,9 +2,9 @@
 {
   boot = {
     kernelParams = [
-      "resume_offset=18883840"
+      "resume_offset=533760"
     ];
-    resumeDevice = "/dev/disk/by-uuid/6e431e35-0712-4d4a-8dd4-7fd6263797b4";
+    resumeDevice = "/dev/disk/by-uuid/5068c0e8-469c-4e68-b166-a2aee64bb2a9";
   };
 
   swapDevices = [
