@@ -219,6 +219,8 @@ The current reinstall workflow is documented in [`docs/reinstall.md`](./docs/rei
 - full-disk NixOS reinstall on a target machine
 - installing an existing host onto filesystems already mounted at `/mnt`
 - selecting a fixed flake host, networking hostname, and driver profile
+- choosing plain root, LUKS passphrase unlock, or LUKS TPM2 PCR 7 unlock
+- optionally enabling Lanzaboote/Secure Boot for the installed host
 - understanding the Btrfs swapfile and hibernation offset
 
 Quick full-disk reinstall entrypoint from a NixOS installer shell:
@@ -231,7 +233,9 @@ sudo bash scripts/full-disk-install.sh --host laptop --username curse
 
 The script prompts for `networking.hostName` and a driver profile, prints the
 selected disk, and requires an exact `WIPE /dev/...` confirmation before
-partitioning or formatting.
+partitioning or formatting. It also prompts for encryption and Lanzaboote. TPM2
+PCR 7 unlock keeps the original LUKS passphrase as a fallback and prints the
+post-install `systemd-cryptenroll` command after installation.
 
 ### 0. Requirements
 

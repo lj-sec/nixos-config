@@ -13,6 +13,8 @@ in
     ./system.nix
     # Installer-selected hardware driver profile
     ./hardware-profile.nix
+    # Installer-selected disk encryption and TPM unlock policy
+    ./disk-security.nix
     # Wayland settings
     ./wayland.nix
   ]

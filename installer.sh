@@ -54,12 +54,15 @@ run_mounted_install() {
   findmnt /mnt >/dev/null 2>&1 || die "/mnt is not mounted. Mount the target root filesystem first."
 
   local host network_hostname driver_profile username features
+  local secure_boot encryption
   host="$(select_host "$repo")"
   network_hostname="$(select_network_hostname "$host")"
   driver_profile="$(select_driver_profile "$(default_driver_profile "$host")")"
   username="$(prompt_default "NixOS username" "curse")"
   validate_username "$username" || die "Invalid username: $username"
   features="$(select_features)"
+  secure_boot="$(select_secure_boot)"
+  encryption="none"
 
   cat <<SUMMARY
 
@@ -71,13 +74,15 @@ Driver profile:      $driver_profile
 Username:            $username
 Target:              existing filesystems mounted under /mnt
 Features:            $(features_summary "$features")
+Security:            $(security_summary "$encryption" "$secure_boot")
 Command:             sudo nixos-install --flake .#$host
 
 No partitioning or formatting will be performed by this mode.
+Encryption is not configured by mounted install mode; use full-disk install for LUKS setup.
 SUMMARY
 
   confirm_yes_no "Install to the mounted /mnt target?" "n" || die "Install cancelled."
-  write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features"
+  write_local_config "$repo/hosts/$host/local.nix" "$username" "$network_hostname" "$driver_profile" "$features" "$encryption" "$secure_boot"
   sudo nixos-install --flake ".#$host"
 }
 

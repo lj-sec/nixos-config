@@ -1,7 +1,16 @@
-{ inputs, pkgs, ... }:
+{ inputs, installSecurity ? {}, lib, pkgs, ... }:
+let
+  secureBoot = installSecurity.secureBoot or false;
+in
 {
   imports = [
     inputs.nixos-boot.nixosModules.default
+  ] ++ lib.optionals secureBoot [
+    inputs.lanzaboote.nixosModules.lanzaboote
+  ];
+
+  environment.systemPackages = lib.optionals secureBoot [
+    pkgs.sbctl
   ];
 
   boot = {
@@ -14,7 +23,7 @@
 
     loader = {
       systemd-boot = {
-        enable = true;
+        enable = if secureBoot then lib.mkForce false else true;
         configurationLimit = 5;
       };
       efi = {
@@ -23,6 +32,11 @@
       timeout = 10;
     };
     plymouth.enable = true;
+  } // lib.optionalAttrs secureBoot {
+    lanzaboote = lib.mkIf secureBoot {
+      enable = true;
+      pkiBundle = "/var/lib/sbctl";
+    };
   };
 
   nixos-boot = {

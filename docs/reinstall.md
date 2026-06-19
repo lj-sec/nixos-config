@@ -41,8 +41,48 @@ so flake evaluation remains pure.
 The installer also asks for a driver profile. Available profiles are `auto`,
 `none`, `amd`, `intel`, `nvidia`, and `vm`.
 
+The full-disk installer also asks for disk security choices:
+
+- `none`: plain Btrfs root.
+- `luks-passphrase`: LUKS root unlocked with a passphrase at boot.
+- `luks-tpm2`: LUKS root configured for TPM2 PCR 7 unlock with the original
+  passphrase kept as the fallback.
+
+Lanzaboote/Secure Boot is optional per install. TPM2 PCR 7 mode requires
+Lanzaboote in this installer because PCR 7 represents Secure Boot policy. The
+installer generates Secure Boot signing keys in `/var/lib/sbctl` when possible,
+but firmware key enrollment still happens after the first boot.
+
 Do not assume a disk name. Confirm the target with `lsblk` from the installer
 environment before selecting it.
+
+## Secure Boot and TPM2 finalization
+
+When Lanzaboote is selected, the installer prints the remaining steps at the
+end of installation. The usual sequence is:
+
+```sh
+sudo sbctl status
+sudo sbctl enroll-keys --microsoft
+sudo sbctl verify
+bootctl status
+```
+
+Before the first boot, make sure firmware Secure Boot is disabled or in setup
+mode so the machine does not enforce old/vendor-only keys against the newly
+signed Lanzaboote entries. Enter firmware Secure Boot setup mode before
+enrolling keys, and do not clear the dbx database. After enrolling keys, reboot
+and confirm `bootctl status` shows Secure Boot enabled in user mode.
+
+For `luks-tpm2`, complete Secure Boot enrollment first, then bind the installed
+LUKS container to TPM2 PCR 7:
+
+```sh
+sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 /dev/disk/by-uuid/<luks-uuid>
+```
+
+The installer prints the concrete LUKS UUID. Keep the original LUKS passphrase;
+it remains the fallback unlock method if TPM unlock is unavailable.
 
 ## Swapfile generation
 

@@ -124,6 +124,63 @@ validate_swap_gib() {
   [[ "$size" =~ ^[1-9][0-9]*$ ]]
 }
 
+encryption_modes=(none luks-passphrase luks-tpm2)
+
+encryption_mode_descriptions=(
+  "Plain Btrfs root with no disk encryption"
+  "LUKS encrypted root unlocked with a boot passphrase"
+  "LUKS encrypted root with TPM2 PCR 7 unlock and passphrase fallback"
+)
+
+validate_encryption_mode() {
+  local mode="$1"
+  local known_mode
+
+  for known_mode in "${encryption_modes[@]}"; do
+    [[ "$mode" == "$known_mode" ]] && return 0
+  done
+
+  return 1
+}
+
+select_encryption_mode() {
+  local mode i
+
+  info "Available encryption modes:" >&2
+  for i in "${!encryption_modes[@]}"; do
+    printf '  %-16s %s\n' "${encryption_modes[$i]}" "${encryption_mode_descriptions[$i]}" >&2
+  done
+
+  while true; do
+    mode="$(prompt_default "Encryption mode" "none")"
+    if validate_encryption_mode "$mode"; then
+      printf '%s\n' "$mode"
+      return
+    fi
+    warn "Unknown encryption mode: $mode"
+  done
+}
+
+select_secure_boot() {
+  if confirm_yes_no "Enable Lanzaboote/Secure Boot support for this install?" "n"; then
+    printf '%s\n' "true"
+  else
+    printf '%s\n' "false"
+  fi
+}
+
+validate_bool() {
+  local value="$1"
+  [[ "$value" == "true" || "$value" == "false" ]]
+}
+
+security_summary() {
+  local encryption="$1"
+  local secure_boot="$2"
+
+  printf 'encryption=%s, lanzaboote=%s\n' "$encryption" "$secure_boot"
+}
+
 driver_profiles=(auto none amd intel nvidia vm)
 
 driver_profile_descriptions=(
@@ -332,11 +389,34 @@ write_local_config() {
   local network_hostname="$3"
   local driver_profile="$4"
   local features="$5"
+  local encryption="${6:-none}"
+  local secure_boot="${7:-false}"
+  local luks_device_uuid="${8:-}"
+  local luks_name="${9:-cryptroot}"
+  local tpm2_pcrs="${10:-7}"
+  local security_supplied=0
+  local existing_security=""
+  local luks_device_uuid_nix="null"
   local feature enabled
 
   validate_username "$username" || die "Invalid username: $username"
   validate_hostname "$network_hostname" || die "Invalid networking hostname: $network_hostname"
   validate_driver_profile "$driver_profile" || die "Invalid driver profile: $driver_profile"
+
+  if (($# >= 7)); then
+    security_supplied=1
+    validate_encryption_mode "$encryption" || die "Invalid encryption mode: $encryption"
+    validate_bool "$secure_boot" || die "Invalid secure boot setting: $secure_boot"
+    if [[ -n "$luks_device_uuid" ]]; then
+      luks_device_uuid_nix="\"$luks_device_uuid\""
+    fi
+  elif [[ -f "$file" ]]; then
+    existing_security="$(awk '
+      /^  installSecurity = \{/ { in_block = 1 }
+      in_block { print }
+      in_block && /^  \};/ { exit }
+    ' "$file")"
+  fi
 
   {
     cat <<EOF
@@ -344,6 +424,23 @@ write_local_config() {
   username = "$username";
   networkingHostName = "$network_hostname";
   driverProfile = "$driver_profile";
+EOF
+
+    if ((security_supplied)); then
+      cat <<EOF
+  installSecurity = {
+    encryption = "$encryption";
+    secureBoot = $secure_boot;
+    luksName = "$luks_name";
+    luksDeviceUuid = $luks_device_uuid_nix;
+    tpm2Pcrs = [ $tpm2_pcrs ];
+  };
+EOF
+    elif [[ -n "$existing_security" ]]; then
+      printf '%s\n' "$existing_security"
+    fi
+
+    cat <<'EOF'
   installFeatures = {
 EOF
 

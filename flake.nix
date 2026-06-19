@@ -6,6 +6,11 @@
     nix-colors.url = "github:Misterio77/nix-colors";
     nixos-boot.url = "github:lj-sec/nixos-boot";
 
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.0.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     catppuccin = {
       url = "github:catppuccin/nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,6 +56,7 @@
         networkingHostName = local.networkingHostName or meta.networkingHostName or host;
         driverProfile = local.driverProfile or meta.driverProfile or "auto";
         installFeatures = local.installFeatures or { };
+        installSecurity = local.installSecurity or { };
       in
       lib.nixosSystem {
         inherit system;
@@ -59,6 +65,7 @@
         ];
         specialArgs = {
           inherit self inputs username installFeatures hasFingerprint host hostProfile networkingHostName driverProfile;
+          inherit installSecurity;
           hostMeta = meta;
         };
       };
