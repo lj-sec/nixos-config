@@ -1,52 +1,38 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 let
   fontName   = "0xProto Nerd Font";
   fontSize   = 10;
   cursorSize = 16;
 
-  flavor = "mocha";
-  accent = "lavender";
-
-  # nixpkgs exposes Catppuccin cursors as sub-attrs like `mochaMauve`, `mochaLavender`, etc.
-  cursorPkg = pkgs.catppuccin-cursors.mochaLavender;
-
-  # Catppuccin Papirus folders is meant to be used via an override for flavor/accent.
-  folderPkg = pkgs.catppuccin-papirus-folders.override { inherit flavor accent; };
+  flavor = config.catppuccin.flavor;
+  accent = config.catppuccin.accent;
 
   # Theme dir names for catppuccin-cursors are lowercase now (what apps actually look up).
   cursorName = "catppuccin-${flavor}-${accent}-cursors";
 in
 {
   home.packages = with pkgs; [
-    cursorPkg
-    folderPkg
     magnetic-catppuccin-gtk
   ];
 
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
-    package = cursorPkg;
-    name = cursorName;
     size = cursorSize;
   };
 
   home.sessionVariables = {
     XCURSOR_THEME = cursorName;
     XCURSOR_SIZE  = toString cursorSize;
-    HYPRCURSOR_THEME = cursorName;
-    HYPRCURSOR_SIZE  = toString cursorSize;
   };
 
   systemd.user.sessionVariables = {
     XCURSOR_THEME = cursorName;
     XCURSOR_SIZE  = toString cursorSize;
-    HYPRCURSOR_THEME = cursorName;
-    HYPRCURSOR_SIZE  = toString cursorSize;
   };
 
-  gtk = lib.mkForce {
+  gtk = {
     enable = true;
 
     gtk4 = {
@@ -64,12 +50,10 @@ in
     };
 
     iconTheme = {
-      package = folderPkg;
       name = "Papirus-Dark";
     };
 
     cursorTheme = {
-      package = cursorPkg;
       name = cursorName;
       size = cursorSize;
     };

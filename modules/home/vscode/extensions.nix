@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 let
   terraformFixed =
     pkgs.vscode-extensions.hashicorp.terraform.overrideAttrs (old: {
@@ -14,11 +14,9 @@ let
     });
 in
 {
-  programs.vscodium.profiles.default = lib.mkForce {
+  programs.vscodium.profiles.default = {
     extensions = [
       pkgs.vscode-extensions.jnoortheen.nix-ide
-      pkgs.vscode-extensions.catppuccin.catppuccin-vsc
-      pkgs.vscode-extensions.catppuccin.catppuccin-vsc-icons
       pkgs.vscode-extensions.redhat.ansible
       pkgs.vscode-extensions.redhat.vscode-yaml
       pkgs.vscode-extensions.ms-python.python

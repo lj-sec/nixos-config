@@ -95,7 +95,6 @@ in
             contrast = 1.4;
             ignore_opacity = true;
             noise = 0;
-            new_optimizations = true;
             xray = true;
           };
           
