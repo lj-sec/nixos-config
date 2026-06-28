@@ -28,6 +28,7 @@ in
     # CLI Tools
     #
     ## Utils
+    e2fsprogs
     codex
     wev
     keyd
@@ -78,6 +79,7 @@ in
     wireguard-tools
     remmina
     rpi-imager
+    rustdesk
   ]
 
   ++ lib.optionals (feature "fun") [
