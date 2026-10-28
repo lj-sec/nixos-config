@@ -12,6 +12,7 @@
       font_size = 10;
 
       confirm_os_window_close = 0;
+      remember_window_size = false;
     };
     keybindings = {
       "ctrl+shift+c" = "copy_to_clipboard";

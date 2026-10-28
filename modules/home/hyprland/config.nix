@@ -14,11 +14,17 @@ in
     text = ''
       #!/usr/bin/env bash
       set -euo pipefail
+
+      # Show the lock screen first; start desktop components after unlocking.
+      if ! ${lib.getExe config.programs.hyprlock.package} --grace 0 --no-fade-in; then
+        ${pkgs.uwsm}/bin/uwsm stop
+        exit 1
+      fi
+
       waybar &
       swaync &
       awww-daemon &
       wl-clip-persist --clipboard both &
-      hyprlock || true
     '';
   };
 
@@ -32,9 +38,9 @@ in
         };
 
         exec-once = [
+          "$HOME/.config/hypr/autostart.sh"
           "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE"
           "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE"
-          "$HOME/.config/hypr/autostart.sh"
         ];
 
         input = {
@@ -60,11 +66,12 @@ in
         misc = {
           disable_autoreload = true;
           disable_hyprland_logo = true;
+          disable_splash_rendering = true;
+          background_color = "rgb(000000)";
           layers_hog_keyboard_focus = true;
           animate_manual_resizes = true;
           enable_swallow = true;
           focus_on_activate = false; # may be weird
-          # new_window_takes_over_fullscreen = 2;
           middle_click_paste = false;
         };
 
@@ -84,7 +91,7 @@ in
 
         decoration = {
           rounding = 0;
-          active_opacity = 0.90;
+          active_opacity = 1.0;
           inactive_opacity = 0.90;
           fullscreen_opacity = 1.0;
 
@@ -154,7 +161,7 @@ in
           "$mainMod SHIFT, F, fullscreen, 0"
           
           # App launcher
-          "$mainMod, D, exec, rofi -show drun || pkill rofi"
+          "$mainMod, D, exec, ${pkgs.procps}/bin/pkill -u ${username} -x rofi || ${lib.getExe config.programs.rofi.finalPackage} -show drun"
 
           # Lock screen
           "$mainMod, Escape, exec, hyprlock"
@@ -252,8 +259,8 @@ in
       (lib.mkIf ("${host}" == "laptop") {
         bindl = [
           # All audio via wpctl; LED service will react instantly
-          ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
-          ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
+          ",XF86AudioRaiseVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 2%+"
+          ",XF86AudioLowerVolume,exec,${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 2%-"
           ",XF86AudioMute,exec,${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SINK@ toggle"
 
           # Brightness

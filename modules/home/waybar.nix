@@ -377,7 +377,7 @@ in
 
       "custom/launcher" = {
         format = "[  ]";
-        on-click = "sh -c 'rofi -show drun || pkill rofi'";
+        on-click = "sh -c '${pkgs.procps}/bin/pkill -u ${username} -x rofi || ${lib.getExe config.programs.rofi.finalPackage} -show drun'";
         tooltip = true;
         tooltip-format = "Run Rofi";
       };

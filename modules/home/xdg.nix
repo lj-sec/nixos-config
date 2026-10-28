@@ -7,6 +7,15 @@ let
   videoDesktop = if feature "media" then "mpv.desktop" else browserDesktop;
 in
 {
+  # Keep Remmina available on demand without unlocking the keyring at login.
+  xdg.configFile."autostart/remmina-applet.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Remmina Applet
+    Exec=remmina -i
+    Hidden=true
+  '';
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {

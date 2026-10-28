@@ -1,4 +1,4 @@
-{ inputs, installSecurity ? {}, lib, pkgs, ... }:
+{ config, inputs, installSecurity ? {}, lib, pkgs, ... }:
 let
   secureBoot = installSecurity.secureBoot or false;
 in
@@ -19,6 +19,7 @@ in
     
     kernelParams = [
       "quiet" "loglevel=3" "udev.log_priority=3" "vt.global_cursor_default=0"
+      "systemd.show_status=false" "rd.systemd.show_status=false"
     ];
 
     loader = {
@@ -29,7 +30,8 @@ in
       efi = {
         canTouchEfiVariables = true;
       };
-      timeout = 10;
+      # Hold Space during boot to show the menu and select an older generation.
+      timeout = 0;
     };
     plymouth.enable = true;
   } // lib.optionalAttrs secureBoot {
@@ -38,6 +40,12 @@ in
       pkiBundle = "/var/lib/sbctl";
     };
   };
+
+  # Leave the last splash frame visible until the compositor takes over.
+  systemd.services.plymouth-quit.serviceConfig.ExecStart = [
+    ""
+    "-${config.boot.plymouth.package}/bin/plymouth quit --retain-splash"
+  ];
 
   nixos-boot = {
     enable = true;

@@ -23,7 +23,7 @@
 
 </div>
 
-This repository contains declarative NixOS host configurations managed with flakes and Home Manager.
+This repository contains declarative NixOS host configurations managed with flakes and Home Manager, plus a Nix-on-Droid host configuration for Android.
 The goal is a usable, user-friendly NixOS setup that stays out of the way for daily work.
 
 ---
@@ -49,6 +49,7 @@ nixos-config/
 ├── flake.nix
 ├── flake.lock
 ├── hosts/
+│   ├── android/
 │   ├── desktop/
 │   ├── laptop/
 │   ├── server/
@@ -94,7 +95,7 @@ nixos-config/
 
   ### Output:
   ```bash
-  sudo nixos-rebuild [ACTION] [FLAKE]#[HOST]
+  sudo nixos-rebuild [ACTION] --flake [FLAKE]#[HOST]
   ```
 
   For local `.` rebuilds, this function first runs
@@ -105,7 +106,7 @@ nixos-config/
 
   ### Default:
   ```bash
-  sudo nixos-rebuild switch .#$(hostname)
+  sudo nixos-rebuild switch --flake .#[configured-host]
   ```
 </details>
 
@@ -145,15 +146,14 @@ nixos-config/
 
   ### Usage:
   ```bash
-    split_dir <SRC> <OUTDIR> <MULT><SIZE>"
+  split_dir <SRC> <OUTDIR> <MAX_SIZE>
   ```
 
   ### Output:
-  Splits the SRC directory into OUTDIR into directories that are of <MULT><SIZE> or smaller where <MULT> is how many of <SIZE> bytes.
+  Splits the SRC directory into OUTDIR into parts that are MAX_SIZE bytes or smaller where possible. Top-level directories are copied as whole units.
 
   ### Examples:
   ```bash
-  split_dir ./data/ ./output/       # Default splits into equal chunks
   split_dir ./data/ ./output/ 50MB  # 50MB even dirs
   split_dir ./data/ ./output/ 1.5GB # 1.5GB even dirs
   ```
@@ -205,6 +205,8 @@ The `laptop` host targets a Lenovo Thinkpad T14 Gen5 with a Ryzen 5 PRO 8540U wi
 Some host-specific quirks are documented in the relevant host module:
  - The laptop mic-mute button and LED need direct LED state handling from `./hosts/laptop/default.nix`.
  - Some tested Steam games on the laptop require the GE-Proton compatibility tool.
+The `android` host is targeted towards an S26 Ultra and the root of the repository on nix-on-droid should be treated as `./hosts/android`.
+ - The switch command when in this host directory should be `nix-on-droid switch --flake .`.
 
 ---
 
@@ -312,6 +314,14 @@ For Secure Boot or LUKS installs, keep the generated
 `hosts/<host>/local.nix installSecurity` block with the installed host. Rebuilding
 from a repo copy that lacks that block can produce unsigned boot entries or an
 initrd that cannot unlock the encrypted root.
+
+The boot menu is hidden by default. Hold **Space** as the machine starts to show
+systemd-boot and select an older generation, or run
+`systemctl reboot --boot-loader-menu=10` to show it on the next reboot.
+Plymouth retains its final frame during session startup, and Hyprlock opens
+before Waybar, notifications, and the wallpaper daemon. Those desktop components
+start after the first unlock. A brief black frame can still occur during the
+graphics handoff.
 
 ---
 

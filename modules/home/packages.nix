@@ -29,7 +29,6 @@ in
     #
     ## Utils
     e2fsprogs
-    codex
     wev
     keyd
     nix-search

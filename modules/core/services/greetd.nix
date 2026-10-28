@@ -1,7 +1,9 @@
 { config, pkgs, username, ... }:
 let
   startHypr = pkgs.writeShellScript "start-hyprland-uwsm" ''
-    exec ${pkgs.uwsm}/bin/uwsm start -e -D Hyprland ${config.programs.hyprland.package}/share/wayland-sessions/hyprland.desktop
+    # Keep session startup output in the journal instead of flashing it on VT1.
+    exec ${config.systemd.package}/bin/systemd-cat --identifier=uwsm \
+      ${pkgs.uwsm}/bin/uwsm start -e -D Hyprland ${config.programs.hyprland.package}/share/wayland-sessions/hyprland.desktop
   '';
 in {
   services.greetd = {

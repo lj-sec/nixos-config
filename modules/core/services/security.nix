@@ -10,10 +10,6 @@ let
       libsecret
       seahorse
     ];
-    
-    services.udev.extraRules = ''
-      ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="Video Bus*", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-    '';
 
     # security.sudo.extraConfig = ''
     #   Defaults env_keep += "GIO_EXTRA_MODULES GIO_MODULE_DIR XDG_DATA_DIRS WAYLAND_DISPLAY DISPLAY XDG_RUNTIME_DIR"

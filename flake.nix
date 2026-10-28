@@ -5,6 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nix-colors.url = "github:Misterio77/nix-colors";
     nixos-boot.url = "github:lj-sec/nixos-boot";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.0.0";
